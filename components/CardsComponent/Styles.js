@@ -76,6 +76,10 @@ const Styles = StyleSheet.create({
     width: 50,
     height: 50,
   },
+  cardVirado: {
+    justifyContent: "center",
+    alignItems: "center",
+  },
 });
 
 export default Styles;

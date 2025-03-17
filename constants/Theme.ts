@@ -28,5 +28,11 @@ export const Theme = {
       lineHeight: 22,
       color: "rgba(255,255,255,.45)",
     },
+    txtH3RegularWhiteOpaco70pct: {
+      fontFamily: "LeagueSpartan-Regular",
+      fontSize: 16,
+      lineHeight: 22,
+      color: "rgba(255,255,255,.7)",
+    },
   },
 };
