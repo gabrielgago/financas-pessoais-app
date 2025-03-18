@@ -11,11 +11,15 @@ import {
   Button,
   Keyboard,
   Modal,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Colors } from "@constants/Colors";
 import { Theme } from "@constants/Theme";
 import { useCustomFonts } from "@hooks/useFonts";
+import { useDatabase } from "@hooks/useDatabase";
 import { StatusBar } from "expo-status-bar";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import HeaderComponent from "@components/HeaderComponent";
@@ -24,17 +28,68 @@ import { useMostrarDadosSeguros } from "@hooks/useMostrarDadosSeguros";
 import { getIcon } from "../utils/IconUtils";
 import { buscarTodasAsContas } from "@services/ContaService";
 import { isMostrando } from "@contexts/useContextDadosSeguros";
+import Cartao from "@types/Cartao";
+
+const LabeledTextInput = React.memo(
+  ({
+    label,
+    placeholder,
+    onChange,
+    value,
+    type = "default",
+    textContentType = "none",
+  }) => {
+    // Use useCallback para memoizar a função onChange
+    const handleChange = useCallback(
+      (v) => {
+        onChange(v);
+      },
+      [onChange]
+    );
+
+    return (
+      <View style={{ gap: 5, marginVertical: 5 }}>
+        <Text style={styles.modalText}>{label}</Text>
+        <TextInput
+          placeholder={placeholder}
+          onChangeText={handleChange}
+          value={value}
+          style={styles.inputTxt}
+          cursorColor="#FFFFFF"
+          keyboardType={type}
+          textContentType={textContentType}
+          placeholderTextColor="rgba(212, 213, 214, .6)"
+        />
+      </View>
+    );
+  },
+  // Comparador personalizado para evitar re-renderizações desnecessárias
+  (prevProps, nextProps) => {
+    return prevProps.value === nextProps.value;
+  }
+);
 
 export default function Home() {
-  const { isVisivel, setVisivel } = useState(false);
+  const [isVisivel, setVisivel] = useState(false);
+  //hooks
   const fontsLoaded = useCustomFonts();
+  const { cartoes, addCartao } = useDatabase();
   const { isMostrando, toggleMostrando } = useMostrarDadosSeguros();
+  //dados cartao
+  const [banco, setBanco] = useState();
+  const [saldo, setSaldo] = useState();
+  const [bandeira, setBandeira] = useState();
+  const [numero, setNumero] = useState();
+  const [dataExp, setDataExp] = useState();
+  const [diaVencimento, setDiaVencimento] = useState();
 
   if (!fontsLoaded) {
     return <ActivityIndicator size="large" color={Colors.light.whiteText} />;
   }
 
-  const handleAddCartao = () => {};
+  const handleAddCartao = () => {
+    setVisivel(true);
+  };
 
   const AddCartao = () => {
     return (
@@ -49,7 +104,6 @@ export default function Home() {
   };
 
   const handleShowCredito = () => {
-    Keyboard.dismiss;
     toggleMostrando();
   };
 
@@ -208,24 +262,80 @@ export default function Home() {
         </View>
       </View>
       <Modal
-        animationType="fade" // Pode ser "slide", "fade" ou "none"
-        transparent={true} // Deixa o fundo do modal transparente
+        animationType="fade"
+        transparent={true}
         visible={isVisivel}
-        onRequestClose={() => setVisivel(false)} // Para fechar no iOS ao apertar "Voltar"
+        onRequestClose={() => setVisivel(false)}
       >
-        <View style={styles.modalBackground}>
-          <View style={styles.modalContainer}>
-            <Text style={styles.modalText}>Este é um Modal!</Text>
-
-            {/* Botão para fechar o modal */}
-            <TouchableOpacity
-              onPress={() => setVisivel(false)}
-              style={styles.closeButton}
-            >
-              <Text style={styles.buttonText}>Fechar</Text>
-            </TouchableOpacity>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+          style={{ flex: 1 }}
+        >
+          <View style={styles.modalBackground}>
+            <View style={styles.modalContainer}>
+              <LabeledTextInput
+                label="Banco"
+                placeholder="Banco"
+                onChange={setBanco}
+                value={banco}
+              />
+              <LabeledTextInput
+                label="Saldo"
+                placeholder="Saldo"
+                onChange={(v) => setSaldo(v)}
+                value={saldo}
+                type="decimal-pad"
+              />
+              <LabeledTextInput
+                label="Bandeira"
+                placeholder="Bandeira"
+                onChange={setBandeira}
+                value={bandeira}
+              />
+              <LabeledTextInput
+                label="Numero"
+                placeholder="Numero"
+                onChange={setNumero}
+                value={numero}
+                type="numeric"
+              />
+              <LabeledTextInput
+                label="Data de Expedição"
+                placeholder="Data de expedição"
+                onChange={setDataExp}
+                value={dataExp}
+              />
+              <LabeledTextInput
+                label="Dia do vencimento"
+                placeholder="Dia vencimento"
+                onChange={setDiaVencimento}
+                value={diaVencimento}
+                type="decimal-pad"
+              />
+              <TouchableOpacity
+                onPress={async () => {
+                  Keyboard.dismiss();
+                  const novoCartao: Cartao = {
+                    id: 1,
+                    nomeBanco: "Nubank",
+                    saldo: "1250.75",
+                    bandeira: "MasterCard",
+                    numero: "5432 **** **** 1234",
+                    dataExpedicao: "12/28",
+                    diaVencimento: 10,
+                  };
+                  console.log("###### Inserindo cartao...");
+                  await addCartao(novoCartao);
+                  console.log("###### Cartoes: ", cartoes);
+                  setVisivel(false);
+                }}
+                style={styles.closeButton}
+              >
+                <Text style={styles.buttonText}>Salvar Cartão</Text>
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
+        </KeyboardAvoidingView>
       </Modal>
     </View>
   );
@@ -300,10 +410,29 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
     borderRadius: 10,
-    alignItems: "center",
   },
   modalText: {
-    fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "LeagueSpartan-Regular",
+    fontSize: 18,
+    color: "#696969",
+  },
+  inputTxt: {
+    backgroundColor: "rgba(98, 26, 153, 0.8)",
+    borderRadius: 4,
+    paddingLeft: 10,
+    fontFamily: "Poppins-Regular",
+    fontSize: 14,
+    color: Colors.light.whiteText,
+    height: 45,
+  },
+  closeButton: {
+    justifyContent: "center",
+    alignItems: "center",
+    height: 50,
+  },
+  buttonText: {
+    fontFamily: "LeagueSpartan-Regular",
+    fontSize: 18,
+    color: "#696969",
   },
 });

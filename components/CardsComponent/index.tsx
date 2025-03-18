@@ -12,9 +12,19 @@ import { LinearGradient } from "expo-linear-gradient";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Colors } from "@constants/Colors";
 import { Theme } from "@constants/Theme";
-import { buscarTodosOsCartoes, Cartao } from "@services/CartaoService";
+import { buscarTodosOsCartoes } from "@services/CartaoService";
 import { isMostrando } from "@hooks/useMostrarDadosSeguros";
 import { useMostrarDadosSeguros } from "@hooks/useMostrarDadosSeguros";
+
+export default interface CartaoType {
+  id: number;
+  nomeBanco: string;
+  saldo: number;
+  bandeira: string;
+  numero: string;
+  dataExpedicao: string;
+  diaVencimento: number;
+}
 
 const CardsComponent = () => {
   const EmptyComponent = () => {
@@ -38,8 +48,8 @@ const CardsComponent = () => {
     <FlatList
       horizontal={true}
       data={buscarTodosOsCartoes()}
-      keyExtrator={(item: Cartao) => item.id}
-      renderItem={({ item }: Cartao) => <Card item={item} />}
+      keyExtrator={(item: CartaoType) => item.id}
+      renderItem={({ item }: CartaoType) => <Card item={item} />}
       bounces={false}
       ListEmptyComponent={<EmptyComponent />}
       ItemSeparatorComponent={<View style={{ width: 20 }} />}
