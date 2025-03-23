@@ -6,7 +6,7 @@ const Styles = StyleSheet.create({
   card: {
     height: 184,
     width: 315,
-    borderRadius: 30,
+    borderRadius: 15,
     overflow: "hidden",
   },
   before: {

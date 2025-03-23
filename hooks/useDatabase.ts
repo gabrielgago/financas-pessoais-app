@@ -1,53 +1,33 @@
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import {
-  createTable,
-  insertCartao,
-  getCartoes,
+    createTable,
+    insertCartao,
+    getCartoes,
 } from "../database/CartaoRepository";
+// @ts-ignore
 import Cartao from "@types/Cartao";
 
 export const useDatabase = () => {
-  const [cartoes, setCartoes] = useState<Cartao[]>([]);
+    const [cartoes, setCartoes] = useState<Cartao[]>([]);
 
-  useEffect(() => {
-    (async () => {
-      await createTable(); // Cria a tabela ao iniciar
-      await getCartoes();
-    })(); // Carrega os usuários
-  }, []);
+    useEffect(() => {
+        (async () => {
+            await createTable(); // Cria a tabela ao iniciar
+            await buscarCartoes(); // Carrega os usuários
+        })();
+    }, []);
 
-  const addCartao = async ({
-    nomeBanco,
-    saldo,
-    bandeira,
-    numero,
-    dataExpedicao,
-    diaVencimento,
-  }) => {
-    console.log(
-      "Inserindo cartao: ",
-      nomeBanco,
-      saldo,
-      bandeira,
-      numero,
-      dataExpedicao,
-      diaVencimento
-    );
-    await insertCartao(
-      nomeBanco,
-      saldo,
-      bandeira,
-      numero,
-      dataExpedicao,
-      diaVencimento
-    );
-    console.log("Buscando cartoes... ");
-    await buscarCartoes();
-  };
+    const addCartao = async (cartao: Cartao) => {
+        console.log("Inserindo cartao: ", cartao);
+        await insertCartao(cartao);
+        console.log("Buscando cartoes... ");
+        await buscarCartoes();
+    };
 
-  const buscarCartoes = async () => {
-    await getCartoes((data) => setCartoes(data));
-  };
+    const buscarCartoes = async () => {
+        const cartoes: Cartao[] = await getCartoes();
+        setCartoes(cartoes);
+    };
 
-  return { cartoes, addCartao };
+    return {cartoes, addCartao};
 };
