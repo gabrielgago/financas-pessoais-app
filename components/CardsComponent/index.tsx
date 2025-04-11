@@ -5,6 +5,7 @@ import {
     Image,
     TouchableOpacity,
     Animated,
+    ImageSourcePropType,
 } from "react-native";
 import {useRef, useState} from "react";
 import Styles from "./Styles";
@@ -13,6 +14,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import {Colors} from "@constants/Colors";
 import {Theme} from "@constants/Theme";
 import {useMostrarDadosSeguros} from "@hooks/useMostrarDadosSeguros";
+// @ts-ignore
 import {CartaoDB} from "@types/Cartao";
 
 const CardsComponent = ({cartoes}: { cartoes: CartaoDB[] }) => {
@@ -68,6 +70,15 @@ export const Card = ({item}: { item: CartaoDB }) => {
         outputRange: ["0deg", "360deg"], // Define a rotação completa
     });
 
+    const resolveBandeira = (bandeira: number): ImageSourcePropType => {
+        console.log("Bandeira: ",bandeira)
+        console.log("Bandeira: ", typeof bandeira)
+        if(bandeira === 0) return require("../../assets/images/master_logo.png")
+        if(bandeira === 1) return require("../../assets/images/visa_logo.png")
+        if(bandeira === 2) return require("../../assets/images/elo_logo.png")
+        return require("../../assets/images/default_logo.png"); // Default case
+    }
+
     const Cartao = () => {
         return (
             <LinearGradient style={Styles.card} colors={["#9C2CF3", "#3A49F9"]}>
@@ -95,11 +106,8 @@ export const Card = ({item}: { item: CartaoDB }) => {
                         </View>
                         <Image
                             style={Styles.tinyLogo}
-                            source={
-                                bandeira === 0
-                                    ? require("../../assets/images/master-logo.png")
-                                    : require("../../assets/images/master-logo.png")
-                            }
+                            source={resolveBandeira(bandeira)}
+                            resizeMode="contain"
                         ></Image>
                     </View>
                     <View style={Styles.footer}>

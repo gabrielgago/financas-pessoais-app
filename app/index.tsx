@@ -1,21 +1,20 @@
 // @ts-nocheck
 
 import {
-    View,
-    Text,
     ActivityIndicator,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    FlatList,
     Button,
+    FlatList,
     Keyboard,
     Modal,
+    ScrollView,
+    StyleSheet,
+    Text,
     TextInput,
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    View
 } from "react-native";
-import React, {useState, useCallback} from "react";
+import React, {useCallback, useState} from "react";
 import {Colors} from "@constants/Colors";
 import {Theme} from "@constants/Theme";
 import {useCustomFonts} from "@hooks/useFonts";
@@ -27,6 +26,8 @@ import {getIcon} from "../utils/IconUtils";
 import {buscarTodasAsContas} from "@services/ContaService";
 import Cartao from "@types/Cartao";
 import CardsComponent from "@components/CardsComponent";
+import {Picker} from '@react-native-picker/picker';
+import ColorPicker from "@components/ColorPicker";
 
 const LabeledTextInput = React.memo(
     ({
@@ -36,13 +37,15 @@ const LabeledTextInput = React.memo(
          value,
          type = "default",
          textContentType = "none",
+         children
      }: {
         label: string,
         placeholder: string,
         onChange: (v: string) => void,
         value: string,
         type: string,
-        textContentType: string
+        textContentType: string,
+        children?: React.ReactNode,
     }) => {
         // Use useCallback para memoizar a função onChange
         const handleChange = useCallback(
@@ -55,16 +58,21 @@ const LabeledTextInput = React.memo(
         return (
             <View style={{gap: 5, marginVertical: 5}}>
                 <Text style={styles.modalText}>{label}</Text>
-                <TextInput
-                    placeholder={placeholder}
-                    onChangeText={handleChange}
-                    value={value}
-                    style={styles.inputTxt}
-                    cursorColor="#FFFFFF"
-                    keyboardType={type}
-                    textContentType={textContentType}
-                    placeholderTextColor="rgba(212, 213, 214, .6)"
-                />
+                <View>
+                    {children && (<View style={{top: 17.5, zIndex: 1, position: 'absolute', left: 10}}>
+                        {children}
+                    </View>)}
+                    <TextInput
+                        placeholder={placeholder}
+                        onChangeText={handleChange}
+                        value={value}
+                        style={styles.inputTxt}
+                        cursorColor="#FFFFFF"
+                        keyboardType={type}
+                        textContentType={textContentType}
+                        placeholderTextColor="#7B6F72"
+                    />
+                </View>
             </View>
         );
     },
@@ -87,6 +95,7 @@ export default function Home() {
     const [numero, setNumero] = useState();
     const [dataExp, setDataExp] = useState();
     const [diaVencimento, setDiaVencimento] = useState();
+    const [bandeiraSelecionada, setBandeiraSelecionada] = useState();
 
     if (!fontsLoaded) {
         return <ActivityIndicator size="large" color={Colors.light.whiteText}/>;
@@ -169,7 +178,8 @@ export default function Home() {
             <View
                 style={[
                     styles.registroConta,
-                    {backgroundColor: getRegistroCor(diaVencimento)},
+                    {backgroundColor: 'rgba(129,126,126,0.97)', elevation: 5, borderRadius: 14}
+                    // {backgroundColor: getRegistroCor(diaVencimento)},
                 ]}
             >
                 <View
@@ -184,7 +194,7 @@ export default function Home() {
                 <View
                     style={{
                         width: 2,
-                        height: 50,
+                        height: 80,
                         backgroundColor: Colors.light.whiteText,
                         marginHorizontal: 3,
                     }}
@@ -249,7 +259,7 @@ export default function Home() {
                     data={buscarTodasAsContas()}
                     bounces={false}
                     // ListEmptyComponent={<EmptyComponent />}
-                    ItemSeparatorComponent={() => <View style={{height: 0}} />}
+                    ItemSeparatorComponent={() => <View style={{height: 0}}/>}
                     overScrollMode="never"
                     renderItem={({item}) => (
                         <RegistroConta
@@ -275,82 +285,121 @@ export default function Home() {
                 animationType="fade"
                 transparent={true}
                 visible={isVisivel}
-                onRequestClose={() => setVisivel(false)}
+                onRequestClose={() => {
+                    setVisivel(false)
+                }}
             >
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
-                    style={{flex: 1}}
-                >
                     <View style={styles.modalBackground}>
-                        <View style={styles.modalContainer}>
-                            <Button title={"Fechar"} onPress={() => setVisivel(false)}/>
+                        <ScrollView style={styles.modalContainer}>
+                            <TouchableOpacity activeOpacity={.7} onPress={() => setVisivel(false)} style={{alignSelf: 'flex-end'}}>
+                                <FontAwesome6 name="xmark" size={20} color={'#696969'}/>
+                            </TouchableOpacity>
                             <LabeledTextInput
                                 label="Banco"
                                 placeholder="Banco"
                                 onChange={setBanco}
                                 value={banco}
-                            />
+                            >
+                                <FontAwesome6 name='piggy-bank' size={16} color={'#696969'}/>
+                            </LabeledTextInput>
                             <LabeledTextInput
                                 label="Saldo"
                                 placeholder="Saldo"
                                 onChange={(v) => setSaldo(v)}
                                 value={saldo}
                                 type="decimal-pad"
-                            />
-                            <LabeledTextInput
-                                label="Bandeira"
-                                placeholder="Bandeira"
-                                onChange={setBandeira}
-                                value={bandeira}
-                            />
+                            >
+                                <FontAwesome6 name="dollar-sign" size={16} color={'#696969'}/>
+                            </LabeledTextInput>
+                            <View style={{gap: 5, marginVertical: 5, justifyContent: 'center'}}>
+                                <Text style={styles.modalText}>Bandeira</Text>
+                                <View style={{borderRadius: 15, backgroundColor: '#000000', overflow: 'hidden'}}>
+                                    <Picker
+                                        selectedValue={bandeiraSelecionada}
+                                        style={[styles.pickerStyle, {}]}
+                                        onValueChange={(itemValue, itemIndex) =>
+                                            setBandeiraSelecionada(itemValue)
+                                        }>
+                                        <Picker.Item label="Mastercard" value="0"/>
+                                        <Picker.Item label="Visa" value="1"/>
+                                        <Picker.Item label="Elo" value="2"/>
+                                    </Picker>
+                                </View>
+                            </View>
+                            {/*<LabeledTextInput*/}
+                            {/*    label="Bandeira"*/}
+                            {/*    placeholder="Bandeira"*/}
+                            {/*    onChange={setBandeira}*/}
+                            {/*    value={bandeira}*/}
+                            {/*/>*/}
                             <LabeledTextInput
                                 label="Numero"
                                 placeholder="Numero"
                                 onChange={setNumero}
                                 value={numero}
                                 type="numeric"
-                            />
+                            >
+                                <FontAwesome6 name="credit-card" size={16} color={'#696969'}/>
+                            </LabeledTextInput>
                             <LabeledTextInput
                                 label="Data de Expedição"
                                 placeholder="Data de expedição"
                                 onChange={setDataExp}
                                 value={dataExp}
-                            />
+                            >
+                                <FontAwesome6 name="calendar" size={16} color={'#696969'}/>
+                            </LabeledTextInput>
                             <LabeledTextInput
                                 label="Dia do vencimento"
                                 placeholder="Dia vencimento"
                                 onChange={setDiaVencimento}
                                 value={diaVencimento}
                                 type="decimal-pad"
-                            />
+                            >
+                                <FontAwesome6 name="sun" size={16} color={'#696969'}/>
+                            </LabeledTextInput>
+                            <View style={{gap: 5, marginVertical: 5}}>
+                                <Text style={styles.modalText}>Cor do cartão</Text>
+                                {/*<ColorPicker colors={[{color : "#FD6300", selectedColor : "#9C2CF3"}]}/>*/}
+                                {/*<ColorPicker colors={[{color : "#EE012B", selectedColor : "#9C2CF3"}]}/>*/}
+                                {/*<ColorPicker colors={[{color : "#185A97", selectedColor : "#9C2CF3"}]}/>*/}
+                                <ColorPicker
+                                    colors={[
+                                        {color: "#FFF", selectedColor: "#9C2CF3"},
+                                        {color: "#9C2CF3", selectedColor: "#FFF"},
+                                        {color: "#185A97", selectedColor: "#9C2CF3"},
+                                        {color: "#EE012B", selectedColor: "#9C2CF3"},
+                                        {color: "#FD6300", selectedColor: "#9C2CF3"}
+                                    ]}
+                                />
+                            </View>
                             <TouchableOpacity
                                 onPress={async () => {
                                     Keyboard.dismiss();
+
                                     const novoCartao: Cartao = {
-                                        id: 1,
-                                        nomeBanco: "Nubank",
-                                        saldo: 1250.75,
-                                        bandeira: 1,
-                                        numero: "5432 **** **** 1234",
-                                        dataExpedicao: new Date('2028-10-12'),
-                                        diaVencimento: 10,
+                                        nomeBanco: banco,
+                                        saldo: saldo,
+                                        bandeira: bandeiraSelecionada,
+                                        numero: numero,
+                                        dataExpedicao: new Date(dataExp),
+                                        diaVencimento: diaVencimento,
                                     };
+
                                     console.log("###### Inserindo cartao...");
                                     await addCartao(novoCartao);
-                                    console.log("###### Cartoes: ", cartoes);
-                                    alert("Cartão adicionado com sucesso!");
                                     setVisivel(false);
                                 }}
                                 style={styles.closeButton}
                             >
                                 <Text style={styles.buttonText}>Salvar Cartão</Text>
                             </TouchableOpacity>
-                        </View>
+                        </ScrollView>
                     </View>
-                </KeyboardAvoidingView>
             </Modal>
         </View>
-    );
+    )
+        ;
 }
 
 const styles = StyleSheet.create<any>({
@@ -373,7 +422,7 @@ const styles = StyleSheet.create<any>({
         alignItems: "center",
     },
     contas: {
-        backgroundColor: Colors.light.whiteText,
+        // backgroundColor: Colors.light.whiteText,
         flex: 1,
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
@@ -419,6 +468,8 @@ const styles = StyleSheet.create<any>({
     },
     modalContainer: {
         width: 300,
+        maxHeight: 700,
+        // flexGrow: 1,
         backgroundColor: "white",
         padding: 20,
         borderRadius: 10,
@@ -429,18 +480,28 @@ const styles = StyleSheet.create<any>({
         color: "#696969",
     },
     inputTxt: {
-        backgroundColor: "rgba(98, 26, 153, 0.8)",
-        borderRadius: 4,
-        paddingLeft: 10,
+        backgroundColor: "#F7F8F8",
+        borderRadius: 15,
+        paddingLeft: 40,
         fontFamily: "Poppins-Regular",
         fontSize: 14,
-        color: Colors.light.whiteText,
-        height: 45,
+        color: '#7B6F72',
+        height: 55,
     },
+    pickerStyle: {
+        backgroundColor: "#F7F8F8",
+        borderRadius: 15,
+        paddingLeft: 40,
+        fontFamily: "Poppins-Regular",
+        fontSize: 14,
+        color: '#7B6F72',
+    },
+    // height: 10,
     closeButton: {
         justifyContent: "center",
         alignItems: "center",
         height: 50,
+        marginTop: 30
     },
     buttonText: {
         fontFamily: "LeagueSpartan-Regular",
