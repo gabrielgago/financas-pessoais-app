@@ -10,6 +10,7 @@ import {CartaoDB} from "@types/Cartao";
 const CardsComponent = ({cartoes}: { cartoes: CartaoDB[] }) => {
     return (
         <FlatList
+            contentContainerStyle={{paddingLeft: 38, paddingEnd: 5, paddingVertical: 5}}
             horizontal={true}
             data={cartoes}
             keyExtractor={(item: CartaoDB): string => String(item.id)}
@@ -17,6 +18,8 @@ const CardsComponent = ({cartoes}: { cartoes: CartaoDB[] }) => {
             bounces={false}
             ItemSeparatorComponent={() => <View style={{width: 20}}/>}
             overScrollMode="never"
+            alwaysBounceHorizontal={false}
+            alwaysBounceVertical={false}
         ></FlatList>
     );
 };
@@ -43,8 +46,6 @@ export const Card = ({item}: { item: CartaoDB }) => {
     });
 
     const resolveBandeira = (bandeira: number): ImageSourcePropType => {
-        console.log("Bandeira: ", bandeira)
-        console.log("Bandeira: ", typeof bandeira)
         if (bandeira === 0) return require("../../assets/images/master_logo.png")
         if (bandeira === 1) return require("../../assets/images/visa_logo.png")
         if (bandeira === 2) return require("../../assets/images/elo_logo.png")

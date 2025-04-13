@@ -1,10 +1,8 @@
-import {Animated, FlatList, Platform, Text, View} from "react-native";
-import React, {useRef, useState} from "react";
+import {FlatList, Platform, Text, View} from "react-native";
+import React from "react";
 import {buscarTodasAsContas} from "@services/ContaService";
 import Styles from './Styles'
 import {Theme} from "@constants/Theme";
-
-const ITEM_HEIGHT = 100;
 
 export default function ListagemDeContas(props: {
     itemSeparatorComponent: () => React.JSX.Element,
@@ -18,7 +16,6 @@ export default function ListagemDeContas(props: {
         bounces={false}
         alwaysBounceVertical={false}
         showsVerticalScrollIndicator={false}
-        // ListEmptyComponent={<EmptyComponent />}
         ItemSeparatorComponent={() => <View style={{height: 0}}/>}
         overScrollMode="never"
         keyExtractor={(item) => String(item.id)}

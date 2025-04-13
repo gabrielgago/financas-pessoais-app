@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import {ActivityIndicator, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Colors} from "@constants/Colors";
 import {Theme} from "@constants/Theme";
 import {useCustomFonts} from "@hooks/useFonts";
@@ -13,29 +13,43 @@ import CardsComponent from "@components/CardsComponent";
 import ListagemDeContas from "@components/ListagemDeContas";
 import Styles from "@components/CardsComponent/Styles";
 import FormCadastroCartoesModalComponent from "@components/FormCadastroCartoesModalComponent";
+import * as Notifications from "expo-notifications";
 
 export default function Home() {
-    const [saldoCreditoTotal, setSaldoCreditoTotal] = useState(0);
+
     const [isVisivel, setVisivel] = useState(false);
     //hooks
     const fontsLoaded = useCustomFonts();
-    const {cartoes, addCartao} = useDatabase();
+    const {cartoes, addCartao, saldoCreditoTotal} = useDatabase();
     const {isMostrando, toggleMostrando} = useMostrarDadosSeguros();
 
     if (!fontsLoaded) {
         return <ActivityIndicator size="large" color={Colors.light.whiteText}/>;
     }
 
-    const handleAddCartao = () => {
-        setVisivel(true);
-    };
+    useEffect(() => {
+        const cartoesEncontrados = cartoes.includes(cards => cards.diaVencimento === new Date().getDate());
+        console.log(cartoesEncontrados);
+        if (cartoesEncontrados) {
+            console.log(cartoesEncontrados);
+            (async () => {
+                await Notifications.scheduleNotificationAsync({
+                    content: {
+                        title: "🚀 Fique atento!",
+                        body: "Alguns cartões estão vencendo hoje.",
+                    },
+                    trigger: {seconds: 2}, // dispara imediatamente
+                })
+            })();
+        }
+    }, []);
 
     const AddCartao = () => {
         return (
             <TouchableOpacity
                 style={styles.addCartao}
                 activeOpacity={0.8}
-                onPress={handleAddCartao}
+                onPress={() => setVisivel(true)}
             >
                 <FontAwesome6 name="plus" size={30} color={Colors.light.whiteText}/>
             </TouchableOpacity>
@@ -88,6 +102,12 @@ export default function Home() {
         }
     };
 
+    const handleAddCartao = (cartao: Cartao) => {
+        (async () => {
+            await addCartao(cartao);
+        })();
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <HeaderComponent props={{}}/>
@@ -124,9 +144,8 @@ export default function Home() {
                 <ListagemDeContas
                     itemSeparatorComponent={() => <View style={{height: 1, backgroundColor: '#9C2CF3'}}/>}/>
             </View>
-            <FormCadastroCartoesModalComponent isVisivel={isVisivel} setVisivel={setVisivel} addCartao={async () => {
-                await addCartao
-            }}/>
+            <FormCadastroCartoesModalComponent isVisivel={isVisivel} setVisivel={setVisivel}
+                                               addCartao={(cartao) => handleAddCartao(cartao)}/>
         </SafeAreaView>
     )
 }

@@ -9,7 +9,7 @@ export const createTableSQL = `
         data_expedicao TEXT NOT NULL,
         dia_vencimento TINYINT NOT NULL
         );
-    INSERT INTO tb_cartao (nome_banco, saldo, bandeira, numero, data_expedicao, dia_vencimento) VALUES ('NuTeste', 333, 1, 123, '2026-05-30', 10);
+--     INSERT INTO tb_cartao (nome_banco, saldo, bandeira, numero, data_expedicao, dia_vencimento) VALUES ('NuTeste', 333, 1, 123, '2026-05-30', 10);
 `;
 
 export const insertCartaoSQL = `

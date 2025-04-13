@@ -88,12 +88,14 @@ export default function FormCadastroCartoesModalComponent({isVisivel, setVisivel
     //dados cartao
     const [banco, setBanco] = useState("");
     const [saldo, setSaldo] = useState("");
-    const [saldoFormatado, setSaldoFormatado] = useState("");
     const [numero, setNumero] = useState("");
     const [dataExp, setDataExp] = useState("");
     const [diaVencimento, setDiaVencimento] = useState("");
     const [bandeiraSelecionada, setBandeiraSelecionada] = useState(0);
     const [isOpen, setOpen] = useState(false);
+
+    let saldoRef: any = null;
+    let numeroRef: any = null;
 
     function limpaFormulario() {
         setBanco("")
@@ -139,9 +141,9 @@ export default function FormCadastroCartoesModalComponent({isVisivel, setVisivel
                         <View style={{gap: 5, marginVertical: 5}}>
                             <Text style={Styles.modalText}>Saldo</Text>
                             <View>
-                                (<View style={{top: 17.5, zIndex: 1, position: 'absolute', left: 10}}>
+                                <View style={{top: 17.5, zIndex: 1, position: 'absolute', left: 10}}>
                                     <FontAwesome6 name="dollar-sign" size={16} color={'#696969'}/>
-                                </View>)
+                                </View>
                                 <TextInputMask
                                     placeholder={"Saldo"}
                                     style={Styles.inputTxt}
@@ -149,32 +151,20 @@ export default function FormCadastroCartoesModalComponent({isVisivel, setVisivel
                                     keyboardType={"decimal-pad"}
                                     textContentType={"none"}
                                     placeholderTextColor="#7B6F72"
-
                                     type={'money'}
                                     options={{
                                         precision: 2,
                                         separator: ',',
                                         delimiter: '.',
-                                        unit: 'R$',
+                                        unit: 'R$ ',
                                         suffixUnit: ''
                                     }}
                                     value={saldo}
                                     onChangeText={setSaldo}
+                                    ref={ref => saldoRef = ref}
                                 />
                             </View>
                         </View>
-                        {/*<LabeledTextInput*/}
-                        {/*    label="Saldo"*/}
-                        {/*    placeholder="Saldo"*/}
-                        {/*    onChange={(s) => {*/}
-                        {/*        setSaldoFormatado(Intl.NumberFormat("pt-BR", {currency: "BRL", style: "currency"}).format(s))*/}
-                        {/*        setSaldo(s);*/}
-                        {/*    }}*/}
-                        {/*    value={saldo}*/}
-                        {/*    type="decimal-pad"*/}
-                        {/*>*/}
-                        {/*    <FontAwesome6 name="dollar-sign" size={16} color={'#696969'}/>*/}
-                        {/*</LabeledTextInput>*/}
                         <View style={{gap: 5, marginVertical: 5, justifyContent: 'center'}}>
                             <Text style={Styles.modalText}>Bandeira</Text>
                             <View style={{borderRadius: 15, backgroundColor: '#000000', overflow: 'hidden'}}>
@@ -191,20 +181,37 @@ export default function FormCadastroCartoesModalComponent({isVisivel, setVisivel
                             </View>
                         </View>
                         {/*<LabeledTextInput*/}
-                        {/*    label="Bandeira"*/}
-                        {/*    placeholder="Bandeira"*/}
-                        {/*    onChange={setBandeira}*/}
-                        {/*    value={bandeira}*/}
-                        {/*/>*/}
-                        <LabeledTextInput
-                            label="Numero"
-                            placeholder="Numero"
-                            onChange={setNumero}
-                            value={numero}
-                            type="numeric"
-                        >
-                            <FontAwesome6 name="credit-card" size={16} color={'#696969'}/>
-                        </LabeledTextInput>
+                        {/*    label="Numero"*/}
+                        {/*    placeholder="Numero"*/}
+                        {/*    onChange={setNumero}*/}
+                        {/*    value={numero}*/}
+                        {/*    type="numeric"*/}
+                        {/*>*/}
+                        {/*    <FontAwesome6 name="credit-card" size={16} color={'#696969'}/>*/}
+                        {/*</LabeledTextInput>*/}
+                        <View style={{gap: 5, marginVertical: 5}}>
+                            <Text style={Styles.modalText}>Número</Text>
+                            <View>
+                                <View style={{top: 17.5, zIndex: 1, position: 'absolute', left: 10}}>
+                                    <FontAwesome6 name="credit-card" size={16} color={'#696969'}/>
+                                </View>
+                                <TextInputMask
+                                    placeholder={"Número"}
+                                    style={Styles.inputTxt}
+                                    cursorColor="#FFFFFF"
+                                    keyboardType={"decimal-pad"}
+                                    textContentType={"none"}
+                                    placeholderTextColor="#7B6F72"
+                                    type={'custom'}
+                                    options={{
+                                        mask: '9999 9999 9999 9999',
+                                    }}
+                                    value={numero}
+                                    onChangeText={setNumero}
+                                    ref={ref => numeroRef = ref}
+                                />
+                            </View>
+                        </View>
                         <View style={{gap: 5, justifyContent: 'center'}}>
                             <Text style={Styles.modalText}>Data de expiração</Text>
                             <Pressable onPress={() => setOpen(true)}
@@ -234,7 +241,9 @@ export default function FormCadastroCartoesModalComponent({isVisivel, setVisivel
                             minimumDate={new Date()}
                             display="inline"
                             onConfirm={(value) => {
-                                setDataExp(value.toISOString());
+                                if (value) {
+                                    setDataExp(value.toISOString());
+                                }
                                 setOpen(false);
                             }}
                             onCancel={() => {
@@ -276,22 +285,23 @@ export default function FormCadastroCartoesModalComponent({isVisivel, setVisivel
                             />
                         </View>
                         <TouchableOpacity
-                            onPress={async () => {
+                            onPress={() => {
+                                console.log("######### Chamou salvar cartao !!!!");
+
                                 Keyboard.dismiss();
 
                                 const novoCartao: Cartao = {
                                     nomeBanco: banco,
-                                    saldo: 10.00,
+                                    saldo: saldoRef.getRawValue().toFixed(2),
                                     bandeira: bandeiraSelecionada,
-                                    numero: numero,
+                                    numero: numeroRef.getRawValue(),
                                     dataExpedicao: new Date(dataExp),
                                     diaVencimento: Number(diaVencimento),
                                 };
 
-                                console.log("###### Inserindo cartao...");
-                                await addCartao(novoCartao);
-                                setVisivel(false);
+                                addCartao(novoCartao);
                                 limpaFormulario();
+                                setVisivel(false);
                             }}
                             style={Styles.closeButton}
                         >

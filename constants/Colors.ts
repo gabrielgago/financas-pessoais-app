@@ -8,7 +8,7 @@ export const Colors = {
     blackText: "#052224",
     whiteText: "#F1FFF3",
     blueText: "#0068FF",
-    primaryBackgroundColor: "#fcfbfb",
+    primaryBackgroundColor: "#ffffff",
     lightGreen: "#bfc5bf",
     seccondGreen: "#F1FFF3",
     lightBlueButton: "#6DB6FE",
