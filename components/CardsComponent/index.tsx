@@ -1,40 +1,13 @@
-import {
-    View,
-    Text,
-    FlatList,
-    Image,
-    TouchableOpacity,
-    Animated,
-    ImageSourcePropType,
-} from "react-native";
+import {Animated, FlatList, Image, ImageSourcePropType, Text, TouchableOpacity, View,} from "react-native";
 import {useRef, useState} from "react";
 import Styles from "./Styles";
 import {LinearGradient} from "expo-linear-gradient";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import {Colors} from "@constants/Colors";
 import {Theme} from "@constants/Theme";
 import {useMostrarDadosSeguros} from "@hooks/useMostrarDadosSeguros";
 // @ts-ignore
 import {CartaoDB} from "@types/Cartao";
 
 const CardsComponent = ({cartoes}: { cartoes: CartaoDB[] }) => {
-    const EmptyComponent = () => {
-        return (
-            <View style={Styles.emptyContainer}>
-                <View style={Styles.emptyIcon}>
-                    <FontAwesome6
-                        name="thermometer-empty"
-                        size={50}
-                        color={Colors.light.whiteText}
-                    />
-                </View>
-                <Text style={Styles.txtEmptyList}>
-                    Ainda não existem cartões cadastrados...
-                </Text>
-            </View>
-        );
-    };
-
     return (
         <FlatList
             horizontal={true}
@@ -42,7 +15,6 @@ const CardsComponent = ({cartoes}: { cartoes: CartaoDB[] }) => {
             keyExtractor={(item: CartaoDB): string => String(item.id)}
             renderItem={({item}: { item: CartaoDB }) => <Card item={item}/>}
             bounces={false}
-            ListEmptyComponent={<EmptyComponent/>}
             ItemSeparatorComponent={() => <View style={{width: 20}}/>}
             overScrollMode="never"
         ></FlatList>
@@ -71,11 +43,11 @@ export const Card = ({item}: { item: CartaoDB }) => {
     });
 
     const resolveBandeira = (bandeira: number): ImageSourcePropType => {
-        console.log("Bandeira: ",bandeira)
+        console.log("Bandeira: ", bandeira)
         console.log("Bandeira: ", typeof bandeira)
-        if(bandeira === 0) return require("../../assets/images/master_logo.png")
-        if(bandeira === 1) return require("../../assets/images/visa_logo.png")
-        if(bandeira === 2) return require("../../assets/images/elo_logo.png")
+        if (bandeira === 0) return require("../../assets/images/master_logo.png")
+        if (bandeira === 1) return require("../../assets/images/visa_logo.png")
+        if (bandeira === 2) return require("../../assets/images/elo_logo.png")
         return require("../../assets/images/default_logo.png"); // Default case
     }
 
@@ -124,7 +96,8 @@ export const Card = ({item}: { item: CartaoDB }) => {
                                     })
                                     .join("")}
                         </Text>
-                        <Text style={Theme.light.txtH3RegularWhite}>{new Date(data_expedicao).getMonth().toString().padStart(2,'0') + "/" + new Date(data_expedicao).getFullYear()}</Text>
+                        <Text
+                            style={Theme.light.txtH3RegularWhite}>{new Date(data_expedicao).getMonth().toString().padStart(2, '0') + "/" + new Date(data_expedicao).getFullYear()}</Text>
                     </View>
                 </View>
             </LinearGradient>

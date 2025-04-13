@@ -30,9 +30,9 @@ export const Theme = {
     },
     txtH3RegularWhiteOpaco70pct: {
       fontFamily: "LeagueSpartan-Regular",
-      fontSize: 16,
+      fontSize: 20,
       lineHeight: 22,
-      color: "rgba(255,255,255,.7)",
+      color: "#9C2CF3",
     },
   },
 };

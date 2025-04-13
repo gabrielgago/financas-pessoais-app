@@ -13,7 +13,7 @@ const Styles = StyleSheet.create({
     height: 35,
   },
   notificacoes: {
-    backgroundColor: Colors.light.whiteText,
+    backgroundColor: Colors.light.blackText,
     width: 30,
     height: 30,
     borderRadius: 15,
@@ -25,13 +25,13 @@ const Styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 22,
     textAlign: "left",
-    color: Colors.light.whiteText,
+    color: Colors.light.blackText,
   },
   txtSaldacao: {
     fontFamily: "LeagueSpartan-Regular",
     fontSize: 14,
     lineHeight: 13,
-    color: Colors.light.whiteText,
+    color: Colors.light.blackText,
   },
 });
 

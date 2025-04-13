@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from "react";
 import Styles from "./Styles";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
-const HeaderComponent = ({ props }) => {
+const HeaderComponent = () => {
   const [saldacao, setSaldacao] = useState<string>("");
   const [horaAtual, setHoraAtual] = useState<number>(new Date().getHours());
 
@@ -38,7 +38,7 @@ const HeaderComponent = ({ props }) => {
         <Text style={Styles.txtSaldacao}>{saldacao}</Text>
       </View>
       <View style={Styles.notificacoes}>
-        <FontAwesome6 name="bell" size={19} color="black" />
+        <FontAwesome6 name="bell" size={19} color="#FFFFFF" />
       </View>
     </View>
   );
