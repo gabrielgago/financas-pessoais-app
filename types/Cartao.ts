@@ -1,5 +1,5 @@
 export default interface Cartao {
-  id: number | undefined;
+  id?: number | undefined;
   nomeBanco: string;
   saldo: number;
   bandeira: number;
@@ -9,7 +9,7 @@ export default interface Cartao {
 }
 
 export interface CartaoDB {
-  id: number | undefined;
+  id?: number | undefined;
   nome_banco: string;
   saldo: number;
   bandeira: number;

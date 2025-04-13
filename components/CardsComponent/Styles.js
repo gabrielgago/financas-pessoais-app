@@ -43,7 +43,7 @@ const Styles = StyleSheet.create({
     height: 160,
     paddingVertical: Theme.light.padding38,
     marginHorizontal: Theme.light.padding38,
-    backgroundColor: "rgba(245,242,242,0.9)",
+    backgroundColor: "rgba(245,242,242,0.51)",
     fontFamily: "LeagueSpartan-Regular",
     fontSize: 14,
     lineHeight: 13,
