@@ -19,11 +19,8 @@ export default function ListagemDeContas(props: {
         ItemSeparatorComponent={() => <View style={{height: 0}}/>}
         overScrollMode="never"
         keyExtractor={(item) => String(item.id)}
-        renderItem={({item, index}) => {
-
-            return (<ContaComponent item={item}
-                                    style={Platform.OS === "ios" ? Styles.itemIOS : Styles.itemAndroid}/>)
-        }}
+        renderItem={({item, index}) => <ContaComponent item={item}
+                                                       style={Platform.OS === "ios" ? Styles.itemIOS : Styles.itemAndroid}/>}
     ></FlatList>;
 }
 

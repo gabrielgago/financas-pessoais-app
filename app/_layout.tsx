@@ -1,47 +1,48 @@
 import {DadosSensiveisProvider} from "@context/DadosSensiveisContext";
 import {Slot} from "expo-router";
 import {SQLiteProvider} from "expo-sqlite";
-import * as Notifications from "expo-notifications";
+import * as Notifications from 'expo-notifications';
+import * as SplashScreen from 'expo-splash-screen';
 import {useEffect} from "react";
+
+Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldShowAlert: true,
+        shouldPlaySound: false,
+        shouldSetBadge: false,
+    }),
+});
+
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
 
-    Notifications.setNotificationHandler({
-        handleNotification: async () => ({
-            shouldShowAlert: true,
-            shouldPlaySound: false,
-            shouldSetBadge: false,
-        }),
-    });
-
-    // let interval = null;
-
     useEffect(() => {
-        // 1. Solicita permissão
-        const solicitarPermissao = async () => {
-            const {status} = await Notifications.requestPermissionsAsync();
+        const solicitarPermissaoENotificar = async () => {
+            const { status } = await Notifications.requestPermissionsAsync();
             if (status !== 'granted') {
-                alert('Permissão para notificações não concedida!');
+                alert('Permissão de notificações negada!');
                 return;
             }
 
-            // 2. Dispara uma notificação simples ao abrir o app
-            // interval = setInterval(async () => {
-            //     await Notifications.scheduleNotificationAsync({
-            //         content: {
-            //             title: "🚀 Seja bem-vindo!",
-            //             body: "Seu app está funcionando com notificações locais.",
-            //         },
-            //         trigger: { seconds: 2 }, // dispara imediatamente
-            //     });
-            // }, 3000)
+            const prepare = async () => {
+                // Aguarda fontes ou dados carregarem aqui...
+                await new Promise(resolve => setTimeout(resolve, 2000)); // simula delay
+                await SplashScreen.hideAsync(); // esconde a splash screen
+            };
+
+            prepare();
+
+            await Notifications.scheduleNotificationAsync({
+                content: {
+                    title: '💸 Organize-se!',
+                    body: 'Já adicionou suas contas hoje?',
+                },
+                trigger: null, // dispara imediatamente
+            });
         };
 
-        solicitarPermissao()
-
-        // () => {
-        //     interval && clearInterval(interval);
-        // }
+        solicitarPermissaoENotificar();
     }, []);
 
     return (

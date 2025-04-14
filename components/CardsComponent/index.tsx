@@ -3,18 +3,19 @@ import {useRef, useState} from "react";
 import Styles from "./Styles";
 import {LinearGradient} from "expo-linear-gradient";
 import {Theme} from "@constants/Theme";
-import {useMostrarDadosSeguros} from "@hooks/useMostrarDadosSeguros";
 // @ts-ignore
 import {CartaoDB} from "@types/Cartao";
+import {useMostrarDadosSeguros} from "@context/DadosSensiveisContext";
 
 const CardsComponent = ({cartoes}: { cartoes: CartaoDB[] }) => {
+    const {isMostrando} = useMostrarDadosSeguros();
     return (
         <FlatList
             contentContainerStyle={{paddingLeft: 38, paddingEnd: 5, paddingVertical: 5}}
             horizontal={true}
             data={cartoes}
             keyExtractor={(item: CartaoDB): string => String(item.id)}
-            renderItem={({item}: { item: CartaoDB }) => <Card item={item}/>}
+            renderItem={({item}: { item: CartaoDB }) => <Card item={item} isMostrando={isMostrando}/>}
             bounces={false}
             ItemSeparatorComponent={() => <View style={{width: 20}}/>}
             overScrollMode="never"
@@ -24,10 +25,9 @@ const CardsComponent = ({cartoes}: { cartoes: CartaoDB[] }) => {
     );
 };
 
-export const Card = ({item}: { item: CartaoDB }) => {
+export const Card = ({item, isMostrando}: { item: CartaoDB, isMostrando: boolean }) => {
     const {nome_banco, saldo, bandeira, numero, data_expedicao, dia_vencimento} = item;
     const [virado, setVirado] = useState(false);
-    const {isMostrando} = useMostrarDadosSeguros();
 
     const rotateAnim = useRef(new Animated.Value(0)).current;
 

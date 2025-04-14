@@ -1,15 +1,17 @@
-import { useContext } from "react";
-import { DadosSensiveisContext } from "../context/DadosSensiveisContext";
-
-export const useMostrarDadosSeguros = () => {
-  const context = useContext(DadosSensiveisContext);
-
-  if (!context) {
-    throw new Error("useApp deve ser usado dentro de um AppProvider");
-  }
-
-  return {
-    isMostrando: context.isMostrando,
-    toggleMostrando: context.toggleMostrando,
-  };
-};
+// import { useContext } from "react";
+// import { DadosSensiveisContext } from "../context/DadosSensiveisContext";
+//
+// export const useMostrarDadosSeguros = () => {
+//   console.log("Executando useMostrarDadosSeguros");
+//
+//   const context = useContext(DadosSensiveisContext);
+//
+//   if (context === undefined) {
+//     throw new Error("useMostrarDadosSeguros deve ser usado dentro de DadosSensiveisProvider");
+//   }
+//
+//   return {
+//     isMostrando: context.isMostrando,
+//     toggleMostrando: context.toggleMostrando,
+//   };
+// };

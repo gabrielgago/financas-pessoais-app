@@ -1,30 +1,32 @@
-import { createContext, useState, ReactNode } from "react";
+import React, {createContext, ReactNode, useContext, useMemo, useState} from "react";
 
-// Definir o tipo do contexto
-interface DadosSensiveisContextType {
-  isMostrando: boolean;
-  toggleMostrando: () => void;
+interface DadosSensiveisProps {
+    isMostrando: boolean,
+    toggleMostrando: () => void
 }
 
-// Criar o contexto
-export const DadosSensiveisContext = createContext<
-  DadosSensiveisContextType | undefined
->(undefined);
+const DadosSensiveisContext = createContext(null as unknown as DadosSensiveisProps);
 
-// Criar o Provider
-export const DadosSensiveisProvider = ({
-  children,
-}: {
-  children: ReactNode;
-}) => {
-  const [isMostrando, setIsMostrando] = useState(false);
+export const DadosSensiveisProvider = ({children}: { children: ReactNode }) => {
+    console.log("DadosSensiveisProvider está ativo");
 
-  // Alterna o valor entre true e false
-  const toggleMostrando = () => setIsMostrando((prev) => !prev);
+    const [isMostrando, setIsMostrando] = useState(false);
 
-  return (
-    <DadosSensiveisContext.Provider value={{ isMostrando, toggleMostrando }}>
-      {children}
-    </DadosSensiveisContext.Provider>
-  );
+    const toggleMostrando = () => setIsMostrando(prev => !prev);
+
+    const valores: DadosSensiveisProps = useMemo(() => ({
+        isMostrando,
+        toggleMostrando,
+    }), [isMostrando]);
+
+    return (
+        <DadosSensiveisContext.Provider value={valores}>
+            {children}
+        </DadosSensiveisContext.Provider>
+    );
+};
+
+export const useMostrarDadosSeguros: () => DadosSensiveisProps = () => {
+    console.log("Executando useMostrarDadosSeguros");
+    return useContext(DadosSensiveisContext);
 };

@@ -8,41 +8,32 @@ import {useCustomFonts} from "@hooks/useFonts";
 import {useDatabase} from "@hooks/useDatabase";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import HeaderComponent from "@components/HeaderComponent";
-import {useMostrarDadosSeguros} from "@hooks/useMostrarDadosSeguros";
+// import {useMostrarDadosSeguros} from "@hooks/useMostrarDadosSeguros";
 import CardsComponent from "@components/CardsComponent";
 import ListagemDeContas from "@components/ListagemDeContas";
 import Styles from "@components/CardsComponent/Styles";
 import FormCadastroCartoesModalComponent from "@components/FormCadastroCartoesModalComponent";
-import * as Notifications from "expo-notifications";
+import FormCadastroContasModalComponent from "@components/FormCadastroContasModalComponent";
+import {useMostrarDadosSeguros} from "@context/DadosSensiveisContext";
 
 export default function Home() {
+    console.log("Renderizou Home");
 
+    //states
     const [isVisivel, setVisivel] = useState(false);
+    const [isModalContasVisivel, setModalContasVisivel] = useState(false);
     //hooks
     const fontsLoaded = useCustomFonts();
     const {cartoes, addCartao, saldoCreditoTotal} = useDatabase();
     const {isMostrando, toggleMostrando} = useMostrarDadosSeguros();
 
+    useEffect(() => {
+
+    }, []);
+
     if (!fontsLoaded) {
         return <ActivityIndicator size="large" color={Colors.light.whiteText}/>;
     }
-
-    useEffect(() => {
-        const cartoesEncontrados = cartoes.includes(cards => cards.diaVencimento === new Date().getDate());
-        console.log(cartoesEncontrados);
-        if (cartoesEncontrados) {
-            console.log(cartoesEncontrados);
-            (async () => {
-                await Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: "🚀 Fique atento!",
-                        body: "Alguns cartões estão vencendo hoje.",
-                    },
-                    trigger: {seconds: 2}, // dispara imediatamente
-                })
-            })();
-        }
-    }, []);
 
     const AddCartao = () => {
         return (
@@ -108,6 +99,10 @@ export default function Home() {
         })();
     }
 
+    const openFormularioModalContas = () => {
+        setModalContasVisivel(true)
+    }
+
     return (
         <SafeAreaView style={styles.container}>
             <HeaderComponent props={{}}/>
@@ -139,13 +134,21 @@ export default function Home() {
             <View style={styles.contas}>
                 <View style={styles.headerListagemContas}>
                     <Text style={styles.seeOther}>Veja outras contas</Text>
-                    <TouchableOpacity><Text style={styles.addConta}>Adicionar Conta</Text></TouchableOpacity>
+                    <TouchableOpacity onPress={openFormularioModalContas}><Text style={{
+                        fontSize: 14,
+                        color: '#888',
+                        marginTop: 4,
+                    }}>Adicionar Conta</Text></TouchableOpacity>
                 </View>
                 <ListagemDeContas
                     itemSeparatorComponent={() => <View style={{height: 1, backgroundColor: '#9C2CF3'}}/>}/>
             </View>
             <FormCadastroCartoesModalComponent isVisivel={isVisivel} setVisivel={setVisivel}
                                                addCartao={(cartao) => handleAddCartao(cartao)}/>
+            {isModalContasVisivel &&
+                <FormCadastroContasModalComponent isVisivel={isModalContasVisivel} setVisivel={setModalContasVisivel}
+                                                  addConta={() => {
+                                                  }}/>}
         </SafeAreaView>
     )
 }
