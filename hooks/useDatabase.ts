@@ -141,6 +141,19 @@ export const useDatabase = () => {
         }
     }, [insertConta, buscarContas]);
 
+    const deleteConta = async (id: number) => {
+        await db.runAsync(`DELETE
+                           FROM contas
+                           WHERE id = ${id}`);
+        for (let idx in contas) {
+            if (contas[idx].id === id) {
+                const contasCopy = [...contas];
+                delete contasCopy[idx];
+                setContas(contas => contasCopy);
+            }
+        }
+    }
+
     const getCartoes = async (): Promise<CartaoDB[]> => {
         if (!db) throw new Error("Banco de dados não inicializado!");
         return await db.getAllAsync(getCartoesSQL);
@@ -157,6 +170,7 @@ export const useDatabase = () => {
         saldoCreditoTotal,
         contas,
         addConta,
-        setContas
-    }), [cartoes, addCartao, saldoCreditoTotal, contas, addConta, setContas]);
+        setContas,
+        deleteConta
+    }), [cartoes, addCartao, saldoCreditoTotal, contas, addConta, setContas, deleteConta]);
 };

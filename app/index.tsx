@@ -33,7 +33,7 @@ export default function Home() {
     const [isModalContasVisivel, setModalContasVisivel] = useState(false);
     //hooks
     const fontsLoaded = useCustomFonts();
-    const {cartoes, addCartao, saldoCreditoTotal, contas, addConta} = useDatabase();
+    const {cartoes, addCartao, saldoCreditoTotal, contas, addConta, deleteConta} = useDatabase();
     const {isMostrando, toggleMostrando} = useMostrarDadosSeguros();
 
     useEffect(() => {
@@ -157,13 +157,13 @@ export default function Home() {
                     }}>Adicionar Conta</Text></TouchableOpacity>
                 </View>
                 <ListagemDeContas
-                    itemSeparatorComponent={() => <View style={{height: 1, backgroundColor: '#9C2CF3'}}/>} itens={contas}/>
+                    itemSeparatorComponent={() => <View style={{height: 1, backgroundColor: '#9C2CF3'}}/>} itens={contas} deleteConta={(conta) => deleteConta(conta)}/>
             </View>
             <FormCadastroCartoesModalComponent isVisivel={isVisivel} setVisivel={setVisivel}
                                                addCartao={(cartao) => handleAddCartao(cartao)}/>
             {isModalContasVisivel &&
                 <FormCadastroContasModalComponent isVisivel={isModalContasVisivel} setVisivel={setModalContasVisivel}
-                                                  addConta={(conta) => handleAddConta(conta)}/>}
+                                                  addConta={(conta) => handleAddConta(conta)} />}
         </View>
     )
 }

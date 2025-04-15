@@ -1,4 +1,4 @@
-import {FlatList, Platform, Text, TouchableOpacity, View} from "react-native";
+import {Platform, Text, TouchableOpacity, View} from "react-native";
 import React from "react";
 import {ContaDB} from "@services/ContaService";
 import Styles from './Styles'
@@ -9,7 +9,8 @@ import {LinearGradient} from 'expo-linear-gradient';
 
 export default function ListagemDeContas(props: {
     itemSeparatorComponent: () => React.JSX.Element,
-    itens: ContaDB[]
+    itens: ContaDB[],
+    deleteConta: (id: number) => void,
 }) {
 
     // const data = buscarTodasAsContas();
@@ -23,14 +24,14 @@ export default function ListagemDeContas(props: {
         ItemSeparatorComponent={() => <View style={{height: 0}}/>}
         overScrollMode="never"
         keyExtractor={(item) => String(item.id)}
-        renderHiddenItem={({item}) => (
+        renderHiddenItem={(v) => (
             <LinearGradient
                 style={{...(Platform.OS === "ios" ? Styles.itemIOS : Styles.itemAndroid), ...Styles.rowBack}}
                 start={{x: 0, y: 0}}
                 end={{x: 1, y: 0}}
                 locations={[0, 0.5]}
                 colors={['#FFFFFF', '#F94449']}>
-                <TouchableOpacity onPress={() => alert('Deletando...')}>
+                <TouchableOpacity onPress={item => props.deleteConta(v.item.id)}>
                     <Text style={Styles.deleteText}>Deletar</Text>
                 </TouchableOpacity>
             </LinearGradient>
