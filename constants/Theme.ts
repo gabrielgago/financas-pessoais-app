@@ -24,7 +24,7 @@ export const Theme = {
     },
     txtH3RegularWhiteOpaco: {
       fontFamily: "LeagueSpartan-Regular",
-      fontSize: 16,
+      fontSize: 18,
       lineHeight: 22,
       color: "rgba(255,255,255,.45)",
     },

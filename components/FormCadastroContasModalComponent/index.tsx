@@ -47,7 +47,7 @@ export default function FormCadastroContasModalComponent({isVisivel, setVisivel,
                             onChange={setConta}
                             value={conta}
                         >
-                            <FontAwesome6 name='piggy-bank' size={16} color={'#696969'}/>
+                            <FontAwesome6 name='credit-card' size={16} color={'#696969'}/>
                         </CaptionTextInput>
                         <CaptionTextInput
                             label="Dia do vencimento"
@@ -71,6 +71,13 @@ export default function FormCadastroContasModalComponent({isVisivel, setVisivel,
                                 onPress={() => {
                                     console.log("######### Chamou salvar conta !!!!");
                                     Keyboard.dismiss();
+
+                                    const novaConta: Conta = {
+                                        nomeConta: conta,
+                                        diaVencimento: Number(diaVencimento),
+                                    }
+
+                                    addConta(novaConta);
 
                                     limpaFormulario();
                                     setVisivel(false);

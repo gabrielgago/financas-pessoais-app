@@ -9,7 +9,11 @@ export const createTableSQL = `
         data_expedicao TEXT NOT NULL,
         dia_vencimento TINYINT NOT NULL
         );
---     INSERT INTO tb_cartao (nome_banco, saldo, bandeira, numero, data_expedicao, dia_vencimento) VALUES ('NuTeste', 333, 1, 123, '2026-05-30', 10);
+    CREATE TABLE IF NOT EXISTS tb_conta (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        nome_conta VARCHAR(100) NOT NULL UNIQUE,
+        dia_vencimento TINYINT NOT NULL,
+        categoria TEXT NOT NULL CHECK (categoria IN ('DESCONHECIDO', 'LAZER', 'PROGRAMADOS', 'ALIMENTACAO', 'MORADIA', 'PESSOAL', 'COMUNICACAO', 'FINANCEIRO', 'SAUDE', 'SEGURO', 'VEICULO', 'STREAMING'))        );
 `;
 
 export const insertCartaoSQL = `
@@ -17,4 +21,10 @@ export const insertCartaoSQL = `
     VALUES (?, ?, ?, ?, ?, ?);
 `;
 
+export const insertContaSQL = `
+    INSERT INTO tb_conta (nome_conta, dia_vencimento, categoria)
+    VALUES (?, ?, ?);
+`;
+
 export const getCartoesSQL = `SELECT * FROM tb_cartao;`;
+export const getContasSQL = `SELECT * FROM tb_conta;`;

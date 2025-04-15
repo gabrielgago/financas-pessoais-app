@@ -1,6 +1,15 @@
 // @ts-nocheck
 
-import {ActivityIndicator, Pressable, SafeAreaView, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import {
+    ActivityIndicator,
+    Platform,
+    Pressable,
+    SafeAreaView,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    View
+} from "react-native";
 import React, {useEffect, useState} from "react";
 import {Colors} from "@constants/Colors";
 import {Theme} from "@constants/Theme";
@@ -24,7 +33,7 @@ export default function Home() {
     const [isModalContasVisivel, setModalContasVisivel] = useState(false);
     //hooks
     const fontsLoaded = useCustomFonts();
-    const {cartoes, addCartao, saldoCreditoTotal} = useDatabase();
+    const {cartoes, addCartao, saldoCreditoTotal, contas, addConta} = useDatabase();
     const {isMostrando, toggleMostrando} = useMostrarDadosSeguros();
 
     useEffect(() => {
@@ -99,12 +108,18 @@ export default function Home() {
         })();
     }
 
+    const handleAddConta = (cartao: Cartao) => {
+        (async () => {
+            await addConta(cartao);
+        })();
+    }
+
     const openFormularioModalContas = () => {
         setModalContasVisivel(true)
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={{...styles.container, ...(Platform.OS === 'android' ? {paddingTop: 20} : {paddingTop: 80})}}>
             <HeaderComponent props={{}}/>
             <View style={styles.cards}>
                 <View style={styles.headerAreaCardComponent}>
@@ -131,25 +146,25 @@ export default function Home() {
                     </View>
                 ) : <CardsComponent cartoes={cartoes}></CardsComponent>}
             </View>
+            {/*<View style={{borderWidth: 2, borderColor: "#000", borderStyle: "dashed", margin: 15}}></View>*/}
             <View style={styles.contas}>
                 <View style={styles.headerListagemContas}>
                     <Text style={styles.seeOther}>Veja outras contas</Text>
                     <TouchableOpacity onPress={openFormularioModalContas}><Text style={{
                         fontSize: 14,
-                        color: '#888',
+                        color: '#FFF',
                         marginTop: 4,
                     }}>Adicionar Conta</Text></TouchableOpacity>
                 </View>
                 <ListagemDeContas
-                    itemSeparatorComponent={() => <View style={{height: 1, backgroundColor: '#9C2CF3'}}/>}/>
+                    itemSeparatorComponent={() => <View style={{height: 1, backgroundColor: '#9C2CF3'}}/>} itens={contas}/>
             </View>
             <FormCadastroCartoesModalComponent isVisivel={isVisivel} setVisivel={setVisivel}
                                                addCartao={(cartao) => handleAddCartao(cartao)}/>
             {isModalContasVisivel &&
                 <FormCadastroContasModalComponent isVisivel={isModalContasVisivel} setVisivel={setModalContasVisivel}
-                                                  addConta={() => {
-                                                  }}/>}
-        </SafeAreaView>
+                                                  addConta={(conta) => handleAddConta(conta)}/>}
+        </View>
     )
 }
 
@@ -173,13 +188,13 @@ const styles = StyleSheet.create<any>({
             alignItems: "center",
         },
         contas: {
-            // backgroundColor: Colors.light.whiteText,
+            backgroundColor: Colors.light.blackText,
             flex: 1,
             // height: 350,
             borderTopLeftRadius: 30,
             borderTopRightRadius: 30,
             justifyContent: "center",
-            paddingHorizontal: Theme.light.padding38,
+            paddingTop: 15,
             // marginBottom: 10,
             // backgroundColor: "yellow",
         },
@@ -219,9 +234,9 @@ const styles = StyleSheet.create<any>({
             alignItems: "flex-end",
             justifyContent: "space-between",
             gap: Theme.light.padding38,
-            paddingVertical: 20,
-            paddingHorizontal: 5
-            // paddingRight: Theme.light.padding38,
+            paddingHorizontal: Theme.light.padding38,
+            marginVertical: 20,
+            boxSizing: "border-box",
         },
         seeOther: {
             color: "#9C2CF3",

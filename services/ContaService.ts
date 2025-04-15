@@ -1,9 +1,16 @@
 export interface Conta {
-  id: number;
+  id?: number;
   nomeConta: string;
   diaVencimento: number;
-  icon: string;
-  categoria: Array<string>;
+  icon?: string;
+  categoria?: string;
+}
+
+export interface ContaDB {
+  id: number;
+  nome_conta: string;
+  dia_vencimento: number;
+  categoria: string;
 }
 
 const contas = [
@@ -79,6 +86,6 @@ const contas = [
   },
 ];
 
-export const buscarTodasAsContas = (): Array<Conta> => {
-  return contas;
-};
+// export const buscarTodasAsContas = (): Array<Conta> => {
+//   return contas;
+// };

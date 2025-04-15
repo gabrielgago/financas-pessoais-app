@@ -2,14 +2,16 @@ import {useCallback, useEffect, useMemo, useState} from "react";
 // @ts-ignore
 import Cartao, {CartaoDB} from "@types/Cartao";
 import {Alert} from "react-native";
-import {createTableSQL, getCartoesSQL, insertCartaoSQL} from "../database/Constants";
+import {createTableSQL, getCartoesSQL, getContasSQL, insertCartaoSQL, insertContaSQL} from "../database/Constants";
 import {useSQLiteContext} from "expo-sqlite";
+import {Conta, ContaDB} from "@services/ContaService";
 
 export const useDatabase = () => {
 
     const db = useSQLiteContext();
 
     const [cartoes, setCartoes] = useState<CartaoDB[]>([]);
+    const [contas, setContas] = useState<ContaDB[]>([])
     const [saldoCreditoTotal, setSaldoCreditoTotal] = useState(0);
 
     useEffect(() => {
@@ -17,6 +19,7 @@ export const useDatabase = () => {
             try {
                 await db.execAsync(createTableSQL);
                 await buscarCartoes();
+                await buscarContas();
             } catch (e) {
                 console.error("##### Error: ", e)
             }
@@ -56,9 +59,32 @@ export const useDatabase = () => {
         })
     };
 
+    const insertConta = async (conta: Conta): Promise<void> => {
+        if (!db) throw new Error("Banco de dados não inicializado!");
+
+        const {nomeConta, diaVencimento, categoria} = conta;
+
+        await db.withTransactionAsync(async (): Promise<void> => {
+
+            const result = await db.runAsync(insertContaSQL,
+                nomeConta || 'Sem Nome',
+                diaVencimento || 0,
+                categoria || 'DESCONHECIDO');
+
+            if (!result.changes) {
+                throw Error("Houve um erro ao tentar salvar uma conta no bd.");
+            }
+        })
+    };
+
     const buscarCartoes = async () => {
         const cartoes: CartaoDB[] = await getCartoes();
         setCartoes(prevCartoes => cartoes);
+    };
+
+    const buscarContas = async () => {
+        const contas: ContaDB[] = await getContas();
+        setContas(prevConta => contas);
     };
 
     const addCartao = useCallback(async (cartao: Cartao) => {
@@ -88,14 +114,49 @@ export const useDatabase = () => {
         }
     }, [insertCartao, buscarCartoes]);
 
+    const addConta = useCallback(async (conta: Conta) => {
+        try {
+            await insertConta(conta);
+            Alert.alert("Sucesso 🚀!!",
+                "Conta adicionado com sucesso",
+                [{
+                    text: "Uhull!",
+                    onPress: (e) => {
+                    },
+                    style: "cancel"
+                },]);
+            await buscarContas();
+        } catch (e: Error | any) {
+            console.log("Stack trace: ", e.stack);
+            if (e.message.includes("UNIQUE constraint failed")) {
+                Alert.alert("Houve um erro inesperado 🚩",
+                    "Uma conta com o mesmo nome foi adicionada recentemente...",
+                    [{
+                        text: "Entendi",
+                        onPress: (e) => {
+                        },
+                        style: "cancel"
+                    },]);
+            }
+        }
+    }, [insertConta, buscarContas]);
+
     const getCartoes = async (): Promise<CartaoDB[]> => {
         if (!db) throw new Error("Banco de dados não inicializado!");
         return await db.getAllAsync(getCartoesSQL);
+    };
+
+    const getContas = async (): Promise<ContaDB[]> => {
+        if (!db) throw new Error("Banco de dados não inicializado!");
+        return await db.getAllAsync(getContasSQL);
     };
 
     return useMemo(() => ({
         cartoes,
         addCartao,
         saldoCreditoTotal,
-    }), [cartoes, addCartao, saldoCreditoTotal]);
+        contas,
+        addConta,
+        setContas
+    }), [cartoes, addCartao, saldoCreditoTotal, contas, addConta, setContas]);
 };
