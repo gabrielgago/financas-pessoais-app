@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import {ActivityIndicator, Alert, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
-import React, {useCallback, useEffect, useState} from "react";
+import React, {useCallback, useState} from "react";
 import {Colors} from "@constants/Colors";
 import {Theme} from "@constants/Theme";
 import {useCustomFonts} from "@hooks/useFonts";
@@ -27,9 +27,14 @@ export default function Home() {
     const {cartoes, addCartao, saldoCreditoTotal, contas, addConta, deleteConta} = useDatabase();
     const {isMostrando, toggleMostrando} = useMostrarDadosSeguros();
 
-    useEffect(() => {
-
-    }, []);
+    const handleDeleteConta = useCallback((id: number) => {
+        deleteConta(id);
+        Alert.alert("Deletando conta", "Conta deletada com sucesso!", [{
+            text: "Magnífico",
+            onPress: () => {
+            }
+        }]);
+    })
 
     if (!fontsLoaded) {
         return <ActivityIndicator size="large" color={Colors.light.whiteText}/>;
@@ -108,14 +113,6 @@ export default function Home() {
     const openFormularioModalContas = () => {
         setModalContasVisivel(true)
     }
-
-    const handleDeleteConta = useCallback((id: number) => {
-        deleteConta(id);
-        Alert.alert("Deletando conta", "Conta deletada com sucesso!", [{
-            text: "Magnífico",
-            onPress: () => {
-            }}]);
-    })
 
     return (
         <View style={{...styles.container, ...(Platform.OS === 'android' ? {paddingTop: 20} : {paddingTop: 80})}}>

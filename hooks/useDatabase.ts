@@ -171,6 +171,19 @@ export const useDatabase = () => {
         return await db.getAllAsync(getContasSQL);
     };
 
+    const deleteAllData = async () => {
+        try {
+            console.log("Deletando tudo...");
+            await db.runAsync(`DELETE FROM tb_conta`);
+            await db.runAsync(`DELETE FROM tb_cartao`);
+            await buscarCartoes();
+            await buscarContas();
+            console.log("Dados deletados...");
+        } catch (e) {
+            console.error("Houve um erro ao tentar deletar tudo: ", e);
+        }
+    }
+
     return useMemo(() => ({
         cartoes,
         addCartao,
@@ -178,6 +191,7 @@ export const useDatabase = () => {
         contas,
         addConta,
         setContas,
-        deleteConta
-    }), [cartoes, addCartao, saldoCreditoTotal, contas, addConta, setContas, deleteConta]);
+        deleteConta,
+        deleteAllData
+    }), [cartoes, addCartao, saldoCreditoTotal, contas, addConta, setContas, deleteConta, deleteAllData]);
 };
