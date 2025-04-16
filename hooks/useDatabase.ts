@@ -142,15 +142,22 @@ export const useDatabase = () => {
     }, [insertConta, buscarContas]);
 
     const deleteConta = async (id: number) => {
-        await db.runAsync(`DELETE
-                           FROM contas
-                           WHERE id = ${id}`);
-        for (let idx in contas) {
-            if (contas[idx].id === id) {
-                const contasCopy = [...contas];
-                delete contasCopy[idx];
-                setContas(contas => contasCopy);
+        try {
+            console.log("Deletando conta: ", id);
+            await db.runAsync(`DELETE
+                               FROM tb_conta
+                               WHERE id = ${id}`);
+            for (let idx in contas) {
+                const index = Number(idx);
+                if (contas[index].id === id) {
+                    const contasCopy = [...contas];
+                    contasCopy.splice(index, 1)
+                    setContas(contas => contasCopy);
+                }
             }
+            console.log("Conta deletada com sucesso: ", id);
+        } catch (e) {
+            console.error("Houve um erro ao tentar deletar uma conta: ", e);
         }
     }
 

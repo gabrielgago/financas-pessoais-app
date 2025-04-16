@@ -27,7 +27,7 @@ export default function RootLayout() {
 
             const prepare = async () => {
                 // Aguarda fontes ou dados carregarem aqui...
-                await new Promise(resolve => setTimeout(resolve, 2000)); // simula delay
+                await new Promise(resolve => setTimeout(resolve, 1000)); // simula delay
                 await SplashScreen.hideAsync(); // esconde a splash screen
             };
 

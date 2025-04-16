@@ -5,12 +5,13 @@ import Styles from './Styles'
 import {Theme} from "@constants/Theme";
 import {SwipeListView} from 'react-native-swipe-list-view';
 import {LinearGradient} from 'expo-linear-gradient';
+import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 
 
-export default function ListagemDeContas(props: {
-    itemSeparatorComponent: () => React.JSX.Element,
+function ListagemDeContas(props: {
+    itemSeparatorComponent: React.JSX.Element,
     itens: ContaDB[],
-    deleteConta: (id: number) => void,
+    callbackDeleteConta: (id: number) => void,
 }) {
 
     // const data = buscarTodasAsContas();
@@ -22,6 +23,21 @@ export default function ListagemDeContas(props: {
         alwaysBounceVertical={false}
         showsVerticalScrollIndicator={false}
         ItemSeparatorComponent={() => <View style={{height: 0}}/>}
+        ListEmptyComponent={() => <View
+            style={{height: 300, width: '100%', justifyContent: 'center', alignItems: 'center'}}>
+            <View style={Styles.emptyContainer}>
+                <View style={Styles.emptyIcon}>
+                    <FontAwesome6
+                        name="sad-tear"
+                        size={75}
+                        color={"#FFF"}
+                    />
+                </View>
+                <Text style={Styles.txtEmptyList} ellipsizeMode={'tail'}>
+                    Ainda não existem contas cadastrados...
+                </Text>
+            </View>
+        </View>}
         overScrollMode="never"
         keyExtractor={(item) => String(item.id)}
         renderHiddenItem={(v) => (
@@ -31,7 +47,7 @@ export default function ListagemDeContas(props: {
                 end={{x: 1, y: 0}}
                 locations={[0, 0.5]}
                 colors={['#FFFFFF', '#F94449']}>
-                <TouchableOpacity onPress={item => props.deleteConta(v.item.id)}>
+                <TouchableOpacity onPress={item => props.callbackDeleteConta(v.item.id)}>
                     <Text style={Styles.deleteText}>Deletar</Text>
                 </TouchableOpacity>
             </LinearGradient>
@@ -63,4 +79,8 @@ function ContaComponent({item, style}: {
         </LinearGradient>
     );
 }
+
+export default React.memo(ListagemDeContas, (prevProps, nextProps) => {
+    return prevProps.itens === nextProps.itens;
+});
 

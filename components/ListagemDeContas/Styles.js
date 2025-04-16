@@ -62,6 +62,32 @@ const Styles = StyleSheet.create({
         color: '#fff',
         fontWeight: 'bold',
     },
+    emptyContainer: {
+        justifyContent: "center",
+        alignItems: "center",
+        height: 300,
+        width: '100%',
+        paddingVertical: Theme.light.padding38,
+        marginHorizontal: Theme.light.padding38,
+        backgroundColor: "rgba(0,0,0,0.05)",
+        fontFamily: "LeagueSpartan-Regular",
+        fontSize: 14,
+        lineHeight: 13,
+    },
+    emptyIcon: {
+        height: 100,
+        width: 100,
+        marginBottom: 10,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 7,
+    },
+    txtEmptyList: {
+        color: "#ffffff",
+        fontFamily: "LeagueSpartan-Regular",
+        fontSize: 18,
+        lineHeight: 16,
+    },
 });
 
 export default Styles;

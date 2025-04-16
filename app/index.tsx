@@ -1,16 +1,7 @@
 // @ts-nocheck
 
-import {
-    ActivityIndicator,
-    Platform,
-    Pressable,
-    SafeAreaView,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    View
-} from "react-native";
-import React, {useEffect, useState} from "react";
+import {ActivityIndicator, Alert, Platform, Pressable, StyleSheet, Text, TouchableOpacity, View} from "react-native";
+import React, {useCallback, useEffect, useState} from "react";
 import {Colors} from "@constants/Colors";
 import {Theme} from "@constants/Theme";
 import {useCustomFonts} from "@hooks/useFonts";
@@ -118,6 +109,14 @@ export default function Home() {
         setModalContasVisivel(true)
     }
 
+    const handleDeleteConta = useCallback((id: number) => {
+        deleteConta(id);
+        Alert.alert("Deletando conta", "Conta deletada com sucesso!", [{
+            text: "Magnífico",
+            onPress: () => {
+            }}]);
+    })
+
     return (
         <View style={{...styles.container, ...(Platform.OS === 'android' ? {paddingTop: 20} : {paddingTop: 80})}}>
             <HeaderComponent props={{}}/>
@@ -157,13 +156,14 @@ export default function Home() {
                     }}>Adicionar Conta</Text></TouchableOpacity>
                 </View>
                 <ListagemDeContas
-                    itemSeparatorComponent={() => <View style={{height: 1, backgroundColor: '#9C2CF3'}}/>} itens={contas} deleteConta={(conta) => deleteConta(conta)}/>
+                    itemSeparatorComponent={<View style={{height: 1, backgroundColor: '#9C2CF3'}}/>} itens={contas}
+                    callbackDeleteConta={handleDeleteConta}/>
             </View>
             <FormCadastroCartoesModalComponent isVisivel={isVisivel} setVisivel={setVisivel}
                                                addCartao={(cartao) => handleAddCartao(cartao)}/>
             {isModalContasVisivel &&
                 <FormCadastroContasModalComponent isVisivel={isModalContasVisivel} setVisivel={setModalContasVisivel}
-                                                  addConta={(conta) => handleAddConta(conta)} />}
+                                                  addConta={(conta) => handleAddConta(conta)}/>}
         </View>
     )
 }
