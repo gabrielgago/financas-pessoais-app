@@ -1,5 +1,5 @@
-// Queries
-export const createTableSQL = `
+//-- DML
+export const createTableCartaoSQL = `
     CREATE TABLE IF NOT EXISTS tb_cartao (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome_banco VARCHAR(100) NOT NULL,
@@ -9,6 +9,10 @@ export const createTableSQL = `
         data_expedicao TEXT NOT NULL,
         dia_vencimento TINYINT NOT NULL
         );
+    
+`;
+
+export const createTableContaSQL = `
     CREATE TABLE IF NOT EXISTS tb_conta (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         nome_conta VARCHAR(100) NOT NULL UNIQUE,
@@ -16,9 +20,15 @@ export const createTableSQL = `
         categoria TEXT NOT NULL CHECK (categoria IN ('DESCONHECIDO', 'LAZER', 'PROGRAMADOS', 'ALIMENTACAO', 'MORADIA', 'PESSOAL', 'COMUNICACAO', 'FINANCEIRO', 'SAUDE', 'SEGURO', 'VEICULO', 'STREAMING'))        );
 `;
 
+export const alterTableAddColumnCorSelecionadaSQL = `
+    ALTER TABLE tb_cartao ADD COLUMN cor_selecionada VARCHAR(7) NOT NULL DEFAULT "#9C2CF3";
+`;
+
+//-- DDL
+
 export const insertCartaoSQL = `
-    INSERT INTO tb_cartao (nome_banco, saldo, bandeira, numero, data_expedicao, dia_vencimento)
-    VALUES (?, ?, ?, ?, ?, ?);
+    INSERT INTO tb_cartao (nome_banco, saldo, bandeira, numero, data_expedicao, dia_vencimento, cor_selecionada)
+    VALUES (?, ?, ?, ?, ?, ?, ?);
 `;
 
 export const insertContaSQL = `

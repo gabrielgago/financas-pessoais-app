@@ -93,6 +93,7 @@ export default function FormCadastroCartoesModalComponent({isVisivel, setVisivel
     const [diaVencimento, setDiaVencimento] = useState("");
     const [bandeiraSelecionada, setBandeiraSelecionada] = useState(0);
     const [isOpen, setOpen] = useState(false);
+    const [corSelecionada, setCorSelecionada] = useState("");
 
     let saldoRef: any = null;
     let numeroRef: any = null;
@@ -180,15 +181,6 @@ export default function FormCadastroCartoesModalComponent({isVisivel, setVisivel
                                 </Picker>
                             </View>
                         </View>
-                        {/*<LabeledTextInput*/}
-                        {/*    label="Numero"*/}
-                        {/*    placeholder="Numero"*/}
-                        {/*    onChange={setNumero}*/}
-                        {/*    value={numero}*/}
-                        {/*    type="numeric"*/}
-                        {/*>*/}
-                        {/*    <FontAwesome6 name="credit-card" size={16} color={'#696969'}/>*/}
-                        {/*</LabeledTextInput>*/}
                         <View style={{gap: 5, marginVertical: 5}}>
                             <Text style={Styles.modalText}>Número</Text>
                             <View>
@@ -271,17 +263,16 @@ export default function FormCadastroCartoesModalComponent({isVisivel, setVisivel
                         </LabeledTextInput>
                         <View style={{gap: 5, marginVertical: 5}}>
                             <Text style={Styles.modalText}>Cor do cartão</Text>
-                            {/*<ColorPicker colors={[{color : "#FD6300", selectedColor : "#9C2CF3"}]}/>*/}
-                            {/*<ColorPicker colors={[{color : "#EE012B", selectedColor : "#9C2CF3"}]}/>*/}
-                            {/*<ColorPicker colors={[{color : "#185A97", selectedColor : "#9C2CF3"}]}/>*/}
                             <ColorPicker
                                 colors={[
-                                    {color: "#FFF", selectedColor: "#9C2CF3"},
-                                    {color: "#9C2CF3", selectedColor: "#FFF"},
-                                    {color: "#185A97", selectedColor: "#9C2CF3"},
-                                    {color: "#EE012B", selectedColor: "#9C2CF3"},
-                                    {color: "#FD6300", selectedColor: "#9C2CF3"}
+                                    {color: "#9C2CF3", label: "Roxo", isSelecionado: true},
+                                    {color: "#185A97", label: "Azul"},
+                                    {color: "#EE012B", label: "Vermelho"},
+                                    {color: "#FD6300", label: "Amarelo"},
+                                    {color: "#000", label: "Preto"}
                                 ]}
+                                callbackSetSelectedColor={cor => setCorSelecionada(cor)}
+                                highlightColor = '#f6efef'
                             />
                         </View>
                         <TouchableOpacity
@@ -297,6 +288,7 @@ export default function FormCadastroCartoesModalComponent({isVisivel, setVisivel
                                     numero: numeroRef.getRawValue(),
                                     dataExpedicao: new Date(dataExp),
                                     diaVencimento: Number(diaVencimento),
+                                    corSelecionada: corSelecionada
                                 };
 
                                 addCartao(novoCartao);

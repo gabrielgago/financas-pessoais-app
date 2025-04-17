@@ -2,7 +2,15 @@ import {useCallback, useEffect, useMemo, useState} from "react";
 // @ts-ignore
 import Cartao, {CartaoDB} from "@types/Cartao";
 import {Alert} from "react-native";
-import {createTableSQL, getCartoesSQL, getContasSQL, insertCartaoSQL, insertContaSQL} from "../database/Constants";
+import {
+    alterTableAddColumnCorSelecionadaSQL,
+    createTableCartaoSQL,
+    createTableContaSQL,
+    getCartoesSQL,
+    getContasSQL,
+    insertCartaoSQL,
+    insertContaSQL
+} from "../database/Constants";
 import {useSQLiteContext} from "expo-sqlite";
 import {Conta, ContaDB} from "@services/ContaService";
 
@@ -17,7 +25,9 @@ export const useDatabase = () => {
     useEffect(() => {
         const initialize = async () => {
             try {
-                await db.execAsync(createTableSQL);
+                await db.execAsync(createTableCartaoSQL);
+                await db.execAsync(createTableContaSQL);
+                await db.execAsync(alterTableAddColumnCorSelecionadaSQL);
                 await buscarCartoes();
                 await buscarContas();
             } catch (e) {
@@ -38,7 +48,7 @@ export const useDatabase = () => {
     const insertCartao = async (cartao: Cartao): Promise<void> => {
         if (!db) throw new Error("Banco de dados não inicializado!");
 
-        const {nomeBanco, saldo, bandeira, numero, dataExpedicao, diaVencimento} = cartao;
+        const {nomeBanco, saldo, bandeira, numero, dataExpedicao, diaVencimento, corSelecionada} = cartao;
 
         await db.withTransactionAsync(async (): Promise<void> => {
 
@@ -49,7 +59,8 @@ export const useDatabase = () => {
                 bandeira || 0,
                 numero || "0000 0000 0000 0000",
                 dtExp || new Date().toISOString(), // Formata para 'YYYY-MM-DD'
-                diaVencimento || 0);
+                diaVencimento || 0,
+                corSelecionada);
 
             if (!result.changes) {
                 throw Error("Houve um erro ao tentar salvar um cartâo no bd.");

@@ -4,41 +4,41 @@ import {useState} from "react";
 
 interface Color {
     color: string,
-    hintColor?: string,
-    isSelected?: boolean,
-    selectedColor: string
+    highlightColor?: string,
+    label: string,
+    isSelecionado?: boolean,
 }
 
-type ColorProps = {
-    colors: Color[]
-}
-
-function Color({color, hintColor = "#111111", isSelected = false, selectedColor, toggleSelectedColor}: {
+interface ColorProps {
     color: string,
-    hintColor?: string,
+    highlightColor?: string,
     isSelected?: boolean,
-    selectedColor: string,
-    toggleSelectedColor: (color: string) => void,
-}) {
+    callbackSetSelectedColor: (color: string, label: string) => void,
+    label: string,
+}
 
-    const [selected, setSelected] = useState(isSelected);
+type ColorPickerProps = {
+    colors: Color[],
+    callbackSetSelectedColor: (color: string) => void,
+    highlightColor?: string,
+}
 
-    return (<TouchableWithoutFeedback onPress={() => {
-        setSelected(true)
-        toggleSelectedColor(color)
-    }}>
+function Color({color, highlightColor = '#f6efef', isSelected = false, callbackSetSelectedColor, label}: ColorProps) {
+
+    return (<TouchableWithoutFeedback onPress={() => callbackSetSelectedColor(color, label)}>
 
         <View style={{
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        backgroundColor: color,
-        borderColor: selected ? hintColor : selectedColor,
-        borderWidth: selected ? 2 : 1
-    }}/></TouchableWithoutFeedback>);
+            width: 30,
+            height: 30,
+            borderRadius: 5,
+            backgroundColor: color,
+            borderColor: highlightColor,
+            borderWidth: isSelected ? 3 : 0,
+            elevation: 2,
+        }}/></TouchableWithoutFeedback>);
 }
 
-export default function ColorPicker(props: ColorProps) {
+export default function ColorPicker(props: ColorPickerProps) {
 
     const [selectedColor, setSelectedColor] = useState<string>('');
 
@@ -46,14 +46,19 @@ export default function ColorPicker(props: ColorProps) {
         <ScrollView style={Styles.display}>
             <View style={Styles.areaColor}>
                 {
-                    props.colors.map((color, idx) =>
-                        <Color isSelected={color.isSelected}
-                               hintColor={color.hintColor}
-                               color={color.color}
-                               selectedColor={color.selectedColor}
-                               toggleSelectedColor={(cor) => setSelectedColor(cor)}
-                               key={idx}
-                            />)
+                    props.colors.map((color, idx) => {
+                        return <Color
+                            isSelected={(color.isSelecionado && !selectedColor) || selectedColor === color.label}
+                            highlightColor={props.highlightColor}
+                            color={color.color}
+                            label={color.label}
+                            callbackSetSelectedColor={(cor, label) => {
+                                setSelectedColor(label);
+                                props.callbackSetSelectedColor(cor);
+                            }}
+                            key={idx}
+                        />
+                    })
                 }
             </View>
             <Text>Cor escolhida: {selectedColor}</Text>

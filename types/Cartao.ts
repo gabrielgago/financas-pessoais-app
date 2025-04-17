@@ -6,6 +6,7 @@ export default interface Cartao {
   numero: string;
   dataExpedicao: Date;
   diaVencimento: number;
+  corSelecionada: string;
 }
 
 export interface CartaoDB {
@@ -16,5 +17,6 @@ export interface CartaoDB {
   numero: string;
   data_expedicao: string;
   dia_vencimento: number;
+  cor_selecionada: string;
 }
 

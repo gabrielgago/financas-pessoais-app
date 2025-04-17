@@ -34,7 +34,9 @@ export const Card = ({item, isMostrando, callbackDeleteCartao}: {
     isMostrando: boolean,
     callbackDeleteCartao: (id: number) => void
 }) => {
-    const {nome_banco, saldo, bandeira, numero, data_expedicao, dia_vencimento} = item;
+    console.log("Cor: " + item.cor_selecionada);
+
+    const {nome_banco, saldo, bandeira, numero, data_expedicao, dia_vencimento, cor_selecionada} = item;
     const [virado, setVirado] = useState(false);
 
     const rotateAnim = useRef(new Animated.Value(0)).current;
@@ -62,7 +64,7 @@ export const Card = ({item, isMostrando, callbackDeleteCartao}: {
 
     const Cartao = () => {
         return (
-            <LinearGradient style={Styles.card} colors={["#9C2CF3", "#3A49F9"]}>
+            <LinearGradient style={Styles.card} colors={[cor_selecionada || "#9C2CF3", cor_selecionada || "#3A49F9"]}>
                 <View style={Styles.before}></View>
                 <View style={Styles.after}></View>
                 <View style={Styles.areaCartao}>
@@ -120,7 +122,7 @@ export const Card = ({item, isMostrando, callbackDeleteCartao}: {
                 {virado ? (
                     <LinearGradient
                         style={[Styles.card, Styles.cardVirado]}
-                        colors={["#9C2CF3", "#3A49F9"]}
+                        colors={[cor_selecionada || "#9C2CF3", "#3A49F9"]}
                     >
                         <View style={Styles.before}></View>
                         <View style={Styles.after}></View>
