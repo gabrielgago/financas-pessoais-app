@@ -8,7 +8,6 @@ import {useCustomFonts} from "@hooks/useFonts";
 import {useDatabase} from "@hooks/useDatabase";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import HeaderComponent from "@components/HeaderComponent";
-// import {useMostrarDadosSeguros} from "@hooks/useMostrarDadosSeguros";
 import CardsComponent from "@components/CardsComponent";
 import ListagemDeContas from "@components/ListagemDeContas";
 import Styles from "@components/CardsComponent/Styles";
@@ -24,7 +23,7 @@ export default function Home() {
     const [isModalContasVisivel, setModalContasVisivel] = useState(false);
     //hooks
     const fontsLoaded = useCustomFonts();
-    const {cartoes, addCartao, saldoCreditoTotal, contas, addConta, deleteConta} = useDatabase();
+    const {cartoes, addCartao, saldoCreditoTotal, contas, addConta, deleteConta, deleteCartao} = useDatabase();
     const {isMostrando, toggleMostrando} = useMostrarDadosSeguros();
 
     const handleDeleteConta = useCallback((id: number) => {
@@ -36,9 +35,11 @@ export default function Home() {
         }]);
     })
 
-    if (!fontsLoaded) {
-        return <ActivityIndicator size="large" color={Colors.light.whiteText}/>;
-    }
+    const handleDeleteCartao = useCallback((id: number) => {
+        (async () => {
+            await deleteCartao(id);
+        })();
+    })
 
     const AddCartao = () => {
         return (
@@ -114,9 +115,13 @@ export default function Home() {
         setModalContasVisivel(true)
     }
 
+    if (!fontsLoaded) {
+        return <ActivityIndicator size="large" color={Colors.light.whiteText}/>;
+    }
+
     return (
         <View style={{...styles.container, ...(Platform.OS === 'android' ? {paddingTop: 20} : {paddingTop: 80})}}>
-            <HeaderComponent props={{}}/>
+            <HeaderComponent/>
             <View style={styles.cards}>
                 <View style={styles.headerAreaCardComponent}>
                     <AddCartao/>
@@ -140,7 +145,20 @@ export default function Home() {
                             Ainda não existem cartões cadastrados...
                         </Text>
                     </View>
-                ) : <CardsComponent cartoes={cartoes}></CardsComponent>}
+                ) : <CardsComponent cartoes={cartoes} callbackDeleteCartao={(id) => {
+                    Alert.alert("Deletando cartão", "Você tem certeza que deseja deletar este cartão?", [{
+                        text: "Sim, quero deletar",
+                        style: "destructive",
+                        onPress: () => {
+                            handleDeleteCartao(id);
+                        }
+                    }, {
+                        text: "Não",
+                        style: "cancel",
+                        onPress: () => {
+                        }
+                    }])
+                }}></CardsComponent>}
             </View>
             {/*<View style={{borderWidth: 2, borderColor: "#000", borderStyle: "dashed", margin: 15}}></View>*/}
             <View style={styles.contas}>
@@ -158,9 +176,8 @@ export default function Home() {
             </View>
             <FormCadastroCartoesModalComponent isVisivel={isVisivel} setVisivel={setVisivel}
                                                addCartao={(cartao) => handleAddCartao(cartao)}/>
-            {isModalContasVisivel &&
-                <FormCadastroContasModalComponent isVisivel={isModalContasVisivel} setVisivel={setModalContasVisivel}
-                                                  addConta={(conta) => handleAddConta(conta)}/>}
+            <FormCadastroContasModalComponent isVisivel={isModalContasVisivel} setVisivel={setModalContasVisivel}
+                                              addConta={(conta) => handleAddConta(conta)}/>
         </View>
     )
 }

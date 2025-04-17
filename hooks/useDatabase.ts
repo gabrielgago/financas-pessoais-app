@@ -161,6 +161,26 @@ export const useDatabase = () => {
         }
     }
 
+    const deleteCartao = async (id: number) => {
+        try {
+            console.log("Deletando cartao: ", id);
+            await db.runAsync(`DELETE
+                               FROM tb_cartao
+                               WHERE id = ${id}`);
+            for (let idx in cartoes) {
+                const index = Number(idx);
+                if (cartoes[index].id === id) {
+                    const cartoesCopy = [...cartoes];
+                    cartoesCopy.splice(index, 1)
+                    setCartoes(cartao => cartoesCopy);
+                }
+            }
+            console.log("Cartão deletada com sucesso: ", id);
+        } catch (e) {
+            console.error("Houve um erro ao tentar deletar uma cartão: ", e);
+        }
+    }
+
     const getCartoes = async (): Promise<CartaoDB[]> => {
         if (!db) throw new Error("Banco de dados não inicializado!");
         return await db.getAllAsync(getCartoesSQL);
@@ -174,8 +194,10 @@ export const useDatabase = () => {
     const deleteAllData = async () => {
         try {
             console.log("Deletando tudo...");
-            await db.runAsync(`DELETE FROM tb_conta`);
-            await db.runAsync(`DELETE FROM tb_cartao`);
+            await db.runAsync(`DELETE
+                               FROM tb_conta`);
+            await db.runAsync(`DELETE
+                               FROM tb_cartao`);
             await buscarCartoes();
             await buscarContas();
             console.log("Dados deletados...");
@@ -192,6 +214,7 @@ export const useDatabase = () => {
         addConta,
         setContas,
         deleteConta,
-        deleteAllData
-    }), [cartoes, addCartao, saldoCreditoTotal, contas, addConta, setContas, deleteConta, deleteAllData]);
+        deleteAllData,
+        deleteCartao
+    }), [cartoes, addCartao, saldoCreditoTotal, contas, addConta, setContas, deleteConta, deleteAllData, deleteCartao]);
 };

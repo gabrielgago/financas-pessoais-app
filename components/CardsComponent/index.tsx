@@ -7,7 +7,10 @@ import {Theme} from "@constants/Theme";
 import {CartaoDB} from "@types/Cartao";
 import {useMostrarDadosSeguros} from "@context/DadosSensiveisContext";
 
-const CardsComponent = ({cartoes}: { cartoes: CartaoDB[] }) => {
+const CardsComponent = ({cartoes, callbackDeleteCartao}: {
+    cartoes: CartaoDB[],
+    callbackDeleteCartao: (id: number) => void
+}) => {
     const {isMostrando} = useMostrarDadosSeguros();
     return (
         <FlatList
@@ -15,7 +18,8 @@ const CardsComponent = ({cartoes}: { cartoes: CartaoDB[] }) => {
             horizontal={true}
             data={cartoes}
             keyExtractor={(item: CartaoDB): string => String(item.id)}
-            renderItem={({item}: { item: CartaoDB }) => <Card item={item} isMostrando={isMostrando}/>}
+            renderItem={({item}: { item: CartaoDB }) => <Card item={item} isMostrando={isMostrando}
+                                                              callbackDeleteCartao={callbackDeleteCartao}/>}
             bounces={false}
             ItemSeparatorComponent={() => <View style={{width: 20}}/>}
             overScrollMode="never"
@@ -25,7 +29,11 @@ const CardsComponent = ({cartoes}: { cartoes: CartaoDB[] }) => {
     );
 };
 
-export const Card = ({item, isMostrando}: { item: CartaoDB, isMostrando: boolean }) => {
+export const Card = ({item, isMostrando, callbackDeleteCartao}: {
+    item: CartaoDB,
+    isMostrando: boolean,
+    callbackDeleteCartao: (id: number) => void
+}) => {
     const {nome_banco, saldo, bandeira, numero, data_expedicao, dia_vencimento} = item;
     const [virado, setVirado] = useState(false);
 
@@ -106,7 +114,8 @@ export const Card = ({item, isMostrando}: { item: CartaoDB, isMostrando: boolean
     };
 
     return (
-        <TouchableOpacity activeOpacity={0.8} onPress={rotateElement}>
+        <TouchableOpacity activeOpacity={0.8} onPress={rotateElement}
+                          onLongPress={() => callbackDeleteCartao(item?.id || 0)}>
             <Animated.View style={{transform: [{rotateY: rotation}]}}>
                 {virado ? (
                     <LinearGradient
