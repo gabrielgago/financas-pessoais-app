@@ -3,11 +3,13 @@ import {useEffect, useMemo, useState} from "react";
 import Styles from "./Styles";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import {useDatabase} from "@hooks/useDatabase";
+import {useRouter} from "expo-router";
 
 const HeaderComponent = () => {
     const [saldacao, setSaldacao] = useState<string>("");
     const [horaAtual, setHoraAtual] = useState<number>(new Date().getHours());
     const {deleteAllData} = useDatabase();
+    const router = useRouter();
 
     const txtSaldacao = useMemo(() => {
         if (horaAtual >= 5 && horaAtual < 12) return "Bom dia";
@@ -33,27 +35,30 @@ const HeaderComponent = () => {
         return () => clearInterval(interval); // Limpa o intervalo ao desmontar o componente
     }, []);
 
+    // @ts-ignore
     return (
         <View style={Styles.header}>
             <View style={Styles.bemVindo}>
                 <Text style={Styles.txtBemVindo}>Ei, Bem vindo de volta</Text>
                 <Text style={Styles.txtSaldacao}>{saldacao}</Text>
             </View>
-            <TouchableOpacity activeOpacity={5} style={Styles.notificacoes} onLongPress={() => {
-                Alert.alert("Atenção !!!", "Deseja realmente deletar todos os dados da base ??", [{
-                    style: "cancel",
-                    text: "Não!!!",
-                    onPress: () => {
-                    }
-                }, {
-                    style: "destructive",
-                    text: "Sim, quero deletar tudo",
-                    onPress: () => {
-                        deleteAllData();
-                    }
-                }])
+            <TouchableOpacity activeOpacity={5} style={Styles.notificacoes}
+                              onPress={() => router.push({pathname: '/home-bichos'})}
+                              onLongPress={() => {
+                                  Alert.alert("Atenção !!!", "Deseja realmente deletar todos os dados da base ??", [{
+                                      style: "cancel",
+                                      text: "Não!!!",
+                                      onPress: () => {
+                                      }
+                                  }, {
+                                      style: "destructive",
+                                      text: "Sim, quero deletar tudo",
+                                      onPress: () => {
+                                          deleteAllData();
+                                      }
+                                  }])
 
-            }}>
+                              }}>
                 <FontAwesome6 name="bell" size={19} color="#FFFFFF"/>
             </TouchableOpacity>
         </View>

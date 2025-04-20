@@ -27,7 +27,11 @@ export const useDatabase = () => {
             try {
                 await db.execAsync(createTableCartaoSQL);
                 await db.execAsync(createTableContaSQL);
-                await db.execAsync(alterTableAddColumnCorSelecionadaSQL);
+                try {
+                    await db.execAsync(alterTableAddColumnCorSelecionadaSQL);
+                } catch (e) {
+                    console.log("##### Error: ", e)
+                }
                 await buscarCartoes();
                 await buscarContas();
             } catch (e) {

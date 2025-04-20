@@ -12,6 +12,8 @@ const CaptionTextInput = React.memo(
          textContentType = "none",
          children,
          maxLength,
+         labelColor = "#696969",
+         labelSize = 18
      }: {
         label: string,
         placeholder: string,
@@ -21,6 +23,8 @@ const CaptionTextInput = React.memo(
         textContentType?: TextInputIOSProps['textContentType'],
         children?: React.ReactNode,
         maxLength?: number,
+        labelColor?: string,
+        labelSize?: number,
     }) => {
 
         // Use useCallback para memoizar a função onChange
@@ -33,7 +37,7 @@ const CaptionTextInput = React.memo(
 
         return (
             <View style={{gap: 5, marginVertical: 5}}>
-                <Text style={Styles.modalText}>{label}</Text>
+                <Text style={{...Styles.modalText, color: labelColor, fontSize: labelSize}}>{label}</Text>
                 <View>
                     {children && (<View style={Styles.leftIcon}>
                         {children}

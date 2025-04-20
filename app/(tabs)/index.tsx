@@ -14,6 +14,9 @@ import Styles from "@components/CardsComponent/Styles";
 import FormCadastroCartoesModalComponent from "@components/FormCadastroCartoesModalComponent";
 import FormCadastroContasModalComponent from "@components/FormCadastroContasModalComponent";
 import {useMostrarDadosSeguros} from "@context/DadosSensiveisContext";
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+
+const Tab = createBottomTabNavigator();
 
 export default function Home() {
     console.log("Renderizou Home");
